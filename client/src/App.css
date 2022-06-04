@@ -1,0 +1,64 @@
+.App {
+  text-align: center;
+}
+
+h1,th, .title-nav{
+  font-variant: small-caps;
+}
+.title-nav{
+  font-size:xx-large;
+  font-family:  papyrus,"Brush Script MT", cursive;
+
+}
+
+h1{
+  color:rgb(84, 0, 162);
+  font-weight: bold;
+  font-size: 3rem;
+
+}
+.NavBar{
+  background-color: rgb(124, 50, 193);
+  margin-bottom: 2rem;
+}
+
+.button-course,
+.button-course:active,
+.button-course:visited,
+.button-course:focus{
+  background-color: transparent;
+  
+  border: solid rgb(124, 50, 193);
+  outline: none;
+}
+
+.button-course:hover{
+  background-color: rgb(124, 50, 193); 
+  border: solid rgb(124, 50, 193);
+  outline: white;  
+}
+
+.button-course>i{
+  color:rgb(124, 50, 193); 
+
+}
+
+.button-course:hover>i{
+  color:inherit;
+}
+
+.row-separation{
+  border-bottom: 0.15rem solid rgba(151, 98, 200, 0.686);
+}
+
+td,th{
+  vertical-align:middle;
+}
+
+.title-table{
+  margin-bottom: 1.5rem;
+}
+
+.bi-person-circle{
+  opacity: 50%;
+}
