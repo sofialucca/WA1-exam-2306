@@ -8,7 +8,6 @@ function LoginForm(props) {
   const handleSubmit = (event) => {
       event.preventDefault();
       const credentials = { username, password };
-      
       props.login(credentials);
   };
 

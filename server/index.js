@@ -3,7 +3,8 @@
 const express = require('express');
 const morgan = require('morgan'); // logging middleware
 const {check, validationResult} = require('express-validator'); // validation middleware
-const dao = require('./modules/DAOStudyPlan'); // module for accessing the DB
+const studyPlanDao = require('./modules/DAOStudyPlan'); // module for accessing the DB
+const userDao = require('./modules/DAOUser');
 const cors = require('cors');
 
 // Passport-related imports
@@ -21,7 +22,9 @@ app.use(express.json()); // for parsing json request body
 // set uo and enable cors
 const corsOptions = {
   origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200
+  credentials:true,  
+  optionsSuccessStatus: 200,
+
 };
 app.use(cors(corsOptions));
 
@@ -62,7 +65,7 @@ app.use(passport.authenticate('session'));
 // GET /api/courses
 app.get('/api/courses', (request, response) => {
   console.log("retrieving courses");
-    dao.listCourses()
+  studyPlanDao.listCourses()
     .then(courses => response.json(courses).status(200))
     .catch(() => response.status(500).end());
   });
@@ -70,7 +73,7 @@ app.get('/api/courses', (request, response) => {
 /*** User APIs ***/
 
   // POST /api/sessions
-/*
+
 app.post('/api/sessions', function(req, res, next) {
   passport.authenticate('local', (err, user, info) => {
     if (err)
@@ -88,19 +91,19 @@ app.post('/api/sessions', function(req, res, next) {
         return res.status(201).json(req.user);
       });
   })(req, res, next);
-});*/
+});
 
-/* If we aren't interested in sending error messages... */
+/* If we aren't interested in sending error messages... 
 app.post('/api/sessions', passport.authenticate('local'), (req, res) => {
   res.status(201).json(req.user);
-});
+});*/
 
 // GET /api/sessions/current
 app.get('/api/sessions/current', (req, res) => {
   if(req.isAuthenticated()) {
     res.json(req.user);}
   else
-    res.status(401).json({error: 'Not authenticated'});
+    res.status(401);
 });
 
 // DELETE /api/session/current

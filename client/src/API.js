@@ -25,6 +25,7 @@ const logIn = async(credentials) => {
     credentials: 'include',
     body: JSON.stringify(credentials),
   });
+
   if(response.ok) {
     const user = await response.json();
     return user;
@@ -42,8 +43,6 @@ const getUserInfo = async () => {
   const user = await response.json();
   if (response.ok) {
     return user;
-  } else {
-    throw user;  // an object with the error coming from the server
   }
 };
 
@@ -55,5 +54,5 @@ const logOut = async() => {
   if (response.ok)
     return null;
 }
-const API = {getAllCourses,logIn,logOut};
+const API = {getAllCourses,logIn,logOut, getUserInfo};
 export default API;

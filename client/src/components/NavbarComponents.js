@@ -12,9 +12,16 @@ function NavbarStudyPlan(props) {
             <Navbar.Brand href="/">
                 <label className='title-nav text-white vertical-centered'>Study Plan</label>
             </Navbar.Brand>
-            <Link to = '/login'>
-                <i className="bi bi-person-circle fs-2" role="img" alt="logo user" />
-            </Link>
+            <Navbar.Text>
+                <span className = "text-white vertical-centered ">
+                   {(props.user.name !== undefined ? "Hi: " + props.user.name : "")} 
+                </span>
+                &nbsp;
+                <Link to = '/login' className = "text-light">
+                    <i className={"bi bi-person-circle fs-2" + (props.user.name !== undefined ? "": " not-logged-icon")} role="img" alt="logo user" />
+                </Link>                
+            </Navbar.Text>
+
         </Navbar>
     );
 }

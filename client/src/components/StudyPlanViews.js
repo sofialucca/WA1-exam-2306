@@ -50,4 +50,21 @@ function LoginRoute(props){
   )
 }
 
-export {DefaultRoute, CourseRoute, LoginRoute};
+function StudyPlanRoute(props){
+  return(
+      <>
+        <Row>
+          <Col>
+            <h1 className = 'title-table'>Courses</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <CourseTable courses={props.courses} />
+          </Col>
+        </Row>
+      </>
+    );
+}
+
+export {DefaultRoute, CourseRoute, LoginRoute,StudyPlanRoute };
