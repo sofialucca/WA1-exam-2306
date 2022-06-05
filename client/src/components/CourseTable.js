@@ -56,7 +56,7 @@ function CourseData(props) {
       <td>{props.course.code}</td>
       <td>{props.course.name}</td>
       <td>{props.course.credits}</td>
-      <td>{props.course.signedStudents}</td>
+      <td className = {props.course.isFull() ? "text-danger":"text-success"}>{props.course.signedStudents}</td>
       <td>{props.course.maxStudents != null ? props.course.maxStudents : '-'}</td>
     </>
   );

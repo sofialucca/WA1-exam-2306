@@ -23,8 +23,6 @@ app.use(express.json()); // for parsing json request body
 const corsOptions = {
   origin: 'http://localhost:3000',
   credentials:true,  
-  optionsSuccessStatus: 200,
-
 };
 app.use(cors(corsOptions));
 
@@ -64,11 +62,31 @@ app.use(passport.authenticate('session'));
 
 // GET /api/courses
 app.get('/api/courses', (request, response) => {
-  console.log("retrieving courses");
+
   studyPlanDao.listCourses()
     .then(courses => response.json(courses).status(200))
     .catch(() => response.status(500).end());
   });
+
+// GET /api/studyplans/:id
+app.get('/api/studyplans/:id', isLoggedIn, (request, response) => {
+
+  studyPlanDao.getStudyPlan(request.params.id)
+  .then(studyPlan => response.json(studyPlan).status(200))
+  .catch(() => response.status(500).end());
+})
+
+// DELETE /api/studyplan/:id/courses/:code
+
+app.delete('/api/studyplan/:id/:code'), isLoggedIn, async (req, res) => {
+  
+  try {
+    await studyPlanDao.deleteCourseStudyPlan(req.params.id,req.params.code);
+    res.status(204).end();
+  } catch(err) {
+    res.status(503).json({ error: `Database error during the deletion of exam ${req.params.code}.`});
+  }  
+}
 
 /*** User APIs ***/
 
@@ -100,8 +118,9 @@ app.post('/api/sessions', passport.authenticate('local'), (req, res) => {
 
 // GET /api/sessions/current
 app.get('/api/sessions/current', (req, res) => {
+  console.log('check aUTH');
   if(req.isAuthenticated()) {
-    res.json(req.user);}
+    res.json(req.user).status(200);}
   else
     res.status(401);
 });

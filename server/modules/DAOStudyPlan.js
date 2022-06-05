@@ -29,10 +29,10 @@ exports.listCourses = () => {
     })
 }
 
-exports.studyPlan = (id) => {
+exports.getStudyPlan = (id) => {
     return new Promise((resolve,reject) => {
         const sql = "SELECT * FROM courses , studyPlan  WHERE  code = courseCode AND studentMatricola = ?";
-        db.get(sql, [id], (err,rows) => {
+        db.all(sql, [id], (err,rows) => {
             if(err)
                 reject(err);
             else{
@@ -47,6 +47,16 @@ exports.studyPlan = (id) => {
             }
       
         })
+    })
+};
+
+exports.deleteCourseStudyPlan = (id,code) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM StudyPlan WHERE coursecode=? AND studentMatricola = ?';
+        db.run(sql, [code,id], (err) => {
+          if (err) reject(err);
+          else resolve(null);
+        });
     })
 };
 

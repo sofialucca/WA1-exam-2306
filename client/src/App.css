@@ -29,13 +29,15 @@ h1{
   background-color: transparent;
   
   border: solid rgb(124, 50, 193);
-  outline: none;
+  outline: 0;
+  box-shadow:none;
 }
 
 .button-course:hover{
   background-color: rgb(124, 50, 193); 
   border: solid rgb(124, 50, 193);
-  outline: white;  
+  outline: 0;
+  box-shadow:none;  
 }
 
 .button-course>i{
