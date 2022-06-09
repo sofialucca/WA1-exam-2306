@@ -4,7 +4,7 @@ import './App.css';
 import { Container, Row, Alert } from 'react-bootstrap';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate  } from 'react-router-dom';
 import {useState, useEffect} from 'react';
-import { CourseRoute, DefaultRoute, LoginRoute, StudyPlanRoute } from './components/StudyPlanViews';
+import { CourseRoute, DefaultRoute, LoginRoute, StudyPlanRoute, LogoutRoute } from './components/StudyPlanViews';
 import {NavbarStudyPlan} from './components/NavbarComponents.js';
 
 import API from './API';
@@ -78,9 +78,11 @@ function App() {
       }
       
     };
+    setMessage('');
     checkAuth();
     
     getCourses();
+    
 
   }, []);
 
@@ -99,10 +101,13 @@ function App() {
       setMessage({msg: err, type: 'danger'});
     }
   };
-
+//TODO check why doesn't work when i have message
   const handleLogout = async () => {
     await API.logOut();
     setLoggedIn(false);
+    setMessage({msg: `Successfull logout`, type: 'success'});
+    setUser(null);
+    setStudyPlan(null);
   };
 
   return (
@@ -120,6 +125,8 @@ function App() {
           <Route path='*' element={<DefaultRoute />} />      
           <Route path = '/login' element = {<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>/*loggedIn ? <Navigate replace to = '/studyplan'/>:*/ }/>
           <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
+          <Route path = "/logout" element = {loggedIn ? <LogoutRoute logout = {handleLogout}/> :  <Navigate replace to = '/'/>}/>
+
           {/*<Route path="/studyplan" element = {<Navigate replace to = '/login'/> }/>*/}
         </Routes>
       </Container>

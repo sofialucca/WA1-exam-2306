@@ -38,7 +38,7 @@ function LogoutButton(props) {
   return(
     <Row>
       <Col>
-        <Button variant="outline-primary" onClick={props.logout}>Logout</Button>
+        <Button variant="outline-primary" onClick={() => {props.logout()}}>Logout</Button>
       </Col>
     </Row>
   )

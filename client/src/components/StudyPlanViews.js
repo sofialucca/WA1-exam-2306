@@ -1,7 +1,7 @@
 import { Row, Col,Button } from 'react-bootstrap';
 
 import CourseTable from './CourseTable.js';
-import { LoginForm } from './AuthComponents';
+import { LoginForm, LogoutButton } from './AuthComponents';
 import StudyPlanInfos from './StudyPlanComponents.js';
 import StudyPlanCreator from './StudyPlanCreator.js';
 function DefaultRoute() {
@@ -17,17 +17,12 @@ function DefaultRoute() {
       );    
 }
 
-//TODO Link for not logged user
-function notLogged(){
+function LogoutRoute(props){
   return(
     <>
       <Row>
         <Col>
-          <h1>ERROR 401: Not Authorized</h1>
-          <p>Need to be logged in to access this page</p>
-          <Button>
-            LOGIN
-          </Button>
+          <LogoutButton logout = {props.logout}/>
         </Col>
       </Row>
     </>
@@ -102,4 +97,4 @@ function StudyPlanRoute(props){
     );
 }
 
-export {DefaultRoute, CourseRoute, LoginRoute,StudyPlanRoute };
+export {DefaultRoute, CourseRoute, LoginRoute,StudyPlanRoute, LogoutRoute };

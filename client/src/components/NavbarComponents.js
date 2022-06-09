@@ -19,9 +19,15 @@ function NavbarStudyPlan(props) {
                    {(props.user !== null ? "Hi: " + props.user.name : "")} 
                 </span>
                 &nbsp;
-                <Link to = '/login' className = "text-light">
-                    <i className={"bi bi-person-circle fs-2" + (props.user !== null ? "": " not-logged-icon")} role="img" alt="logo user" />
-                </Link>                
+                {props.user === null ?
+                    (<Link to = '/login' className = "text-light">
+                        <i className="bi bi-person-circle fs-2 not-logged-icon" role="img" alt="logo user" />
+                    </Link>)
+                    :(<Link to = "/logout" className = "text-light">
+                        <i className="bi bi-person-circle fs-2" role="img" alt="logo user" />
+                    </Link> )              
+                }
+                
             </Navbar.Text>
 
         </Navbar>
