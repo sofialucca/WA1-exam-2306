@@ -15,8 +15,8 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [message, setMessage] = useState('');
-  const [user,setUser] = useState({});
-  const [studyPlan, setStudyPlan] = useState();
+  const [user,setUser] = useState(null);
+  const [studyPlan, setStudyPlan] = useState(null);
 
   const getCourses = async() => {
     const courses = await API.getAllCourses();
@@ -27,6 +27,7 @@ function App() {
     const studyPlan = await API.getStudyPlan(id);
     setStudyPlan(studyPlan);   
   }
+
   const deleteCourseStudyPlan = async(course) => {
     setStudyPlan(oldStudyPlan => {
 
@@ -36,12 +37,6 @@ function App() {
         oldStudyPlan.type,
         oldStudyPlan.totalCredits-course.credits);
     });
-    /*
-    setCourses( oldCourses => oldCourses.map(c => 
-      c.code === course.code ? 
-        new Course(c.code, c.name, c.credits, c.maxStudents, c.incompatible, c.preparatory, c.signedStudents - 1)
-        : c
-      ));*/
   }
 
   const cancelEditingStudyPlan = async() => {
@@ -49,8 +44,8 @@ function App() {
     getCourses();
   }
   //TODO delete and save study plan
-  const deleteStudyPlan = async(plan) => {
-    plan.courses.forEach((course) =>
+  const deleteStudyPlan = async() => {
+    studyPlan.courses.forEach((course) =>
       {
         setCourses( oldCourses => oldCourses.map(c => 
           c.code === course.code ? 
@@ -59,12 +54,18 @@ function App() {
           ));  
       }  
     )
-
+    const plan = studyPlan;
     setStudyPlan(null);
     await API.deleteStudyPlan(plan);
+    await API.modifyCourses(plan.courses, 'add');
+    getStudyPlan(user.id);
+    getCourses();
+  }
+  const createStudyPlan = async(type) => {
+    setStudyPlan(new StudyPlan(null,user.id,type,0));
+    await API.createStudyPlan(user.id,type);
     getStudyPlan(user.id);
   }
-  
   useEffect(() => {
     
     const checkAuth = async () => {
@@ -72,15 +73,17 @@ function App() {
       if(user !== null){
         setLoggedIn(true);
         setUser(user);
-        getStudyPlan(user.id);         
+        getStudyPlan(user.id);  
+
       }
       
     };
     checkAuth();
-   
+    
     getCourses();
 
   }, []);
+
 
   const handleLogin = async (credentials) => {
     try {
@@ -115,9 +118,9 @@ function App() {
         </Row> }        
         <Routes>
           <Route path='*' element={<DefaultRoute />} />      
-          <Route path = '/login' element = {loggedIn ? <Navigate replace to = '/studyplan'/>:<LoginRoute login = {handleLogin}/>}/>
-          <Route path='/' element = {<CourseRoute courses = {courses}/>}/>
-          <Route path="/studyplan" element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} />:<Navigate replace to = '/login'/> }/>
+          <Route path = '/login' element = {<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>/*loggedIn ? <Navigate replace to = '/studyplan'/>:*/ }/>
+          <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
+          {/*<Route path="/studyplan" element = {<Navigate replace to = '/login'/> }/>*/}
         </Routes>
       </Container>
 

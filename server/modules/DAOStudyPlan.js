@@ -14,7 +14,7 @@ exports.incompatibleCourses = (code) => {
         db.all(sql, [code], (err,rows) => {
             if(err) reject(err);
             else{
-                rows
+                rows.length
                 ? resolve(
                     rows.map(
                       (row) =>row.incompatibleCourse
@@ -29,13 +29,13 @@ exports.incompatibleCourses = (code) => {
 
 exports.listCourses = () => {
     return new Promise(async function(resolve,reject){
-        const sql = 'SELECT * FROM Courses,IncompatibleCourses WHERE courseCode = code  ORDER BY name';
+        const sql = 'SELECT * FROM Courses LEFT JOIN IncompatibleCourses ON courseCode = code  ORDER BY name';
         db.all(sql, [], (err,rows) => {
 
             if(err) reject(err);
             else{
                 let lastAdded;
-                if(rows){
+                if(rows.length){
                     const courses = [];
                     for(let row of rows){
                         if(lastAdded !== row.code){
@@ -56,18 +56,30 @@ exports.listCourses = () => {
     })
 }
 
+exports.updateCourse = (course) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'UPDATE Courses SET enrolledStudents=? WHERE code=?';
+      db.run(sql, [course.signedStudents, course.code], function(err) {
+        if(err) reject(err);
+        else resolve(this.lastID);
+      });
+    });
+  };
+
 exports.getStudyPlan = (id) => {
     return new Promise((resolve,reject) => {
-        const sql = "SELECT * FROM courses , studyPlan, UserCourse  WHERE  code = courseCode AND studentMatricola = ? AND studentMatricola = student";
+        const sql = "SELECT * FROM studyPlan  LEFT JOIN (courses INNER JOIN  UserCourse ON code = courseCode ) ON studentMatricola = student WHERE student = ?" ;
         db.all(sql, [id], (err,rows) => {
             if(err)
                 reject(err);
             else{
-                if(rows){
-                  const courses = rows.map(
-                                        (row) =>
-                                        new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible,row.preparatory)
-                                    );
+                if(rows.length){
+                    const courses = (rows[0].code !== null) ?
+                        rows.map(
+                            (row) =>
+                                new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible,row.preparatory)
+                            )
+                        :null;
                     resolve(new StudyPlan(courses, id, rows[0].type, rows[0].totalCredits));  
                 }else
                     resolve(null);
@@ -85,6 +97,19 @@ exports.deleteStudyPlan = (id) => {
           else resolve(null);
         });
     })
+}
+
+exports.createStudyPlan = (id, type) => {
+    return new Promise((resolve, reject) => {
+
+        const sql = 'INSERT INTO StudyPlan(student, type) VALUES(?, ?)';
+        db.run(sql, [id,type], function (err) {
+          if (err) 
+            reject(err);
+          else 
+            resolve(this.lastID);
+        });
+      });
 }
 
 exports.deleteCourseStudyPlan = (id,code) => {

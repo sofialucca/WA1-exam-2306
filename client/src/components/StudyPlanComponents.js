@@ -2,23 +2,54 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Table, Col, Button,Row, Form } from 'react-bootstrap';
 import  {useState} from 'react';
 
+function StudyPlanInfos(props){
+
+  return(
+    <>
+      <Row>
+        <p>Type of studies: {props.studyPlan.type}</p>
+        </Row>
+        <Row>
+          <Col>
+            Credits chosen:{props.studyPlan.totalCredits} 
+          </Col>
+          <Col>
+            Minimum credits required: {props.studyPlan.type  === 'full-time' ? 60:20}
+          </Col>
+          <Col>
+            Maximum credits available: {props.studyPlan.type  === 'full-time' ? 80:40}
+          </Col>
+      </Row>
+      {
+        props.studyPlan.courses.length ? 
+        <StudyPlanTable {...props}/> 
+        :(<Row>NO COURSES</Row>)
+      }
+      <StudyPlanForm/>
+      <Row>
+        <Col>
+          <Button>
+            SAVE
+          </Button>        
+        </Col>
+        <Col>
+          <Button onClick = {() => props.cancelEdit()}>
+            CANCEL
+          </Button>        
+        </Col>
+        <Col>
+          <Button onClick =  {() => props.deleteStudyPlan()}>
+            DELETE
+          </Button>
+        </Col> 
+      </Row>      
+    </>
+
+  )    
+}
 function StudyPlanTable(props) {
   
-  return(<>
-      <Row>
-      <p>Type of studies: {props.studyPlan.type}</p>
-      </Row>
-      <Row>
-        <Col>
-          Credits chosen:{props.studyPlan.totalCredits} 
-        </Col>
-        <Col>
-          Minimum credits required: {props.studyPlan.type  === 'full-time' ? 60:20}
-        </Col>
-        <Col>
-          Maximum credits available: {props.studyPlan.type  === 'full-time' ? 80:40}
-        </Col>
-      </Row>
+  return(
       <Table borderless >
         <thead>
           <tr>
@@ -29,31 +60,13 @@ function StudyPlanTable(props) {
           </tr>
         </thead>
         <tbody>
-          {
+            {
             props.studyPlan.courses.map((c) => 
               <CourseRow course={c} key={`course-${c.code}`} deleteCourse = {props.deleteCourse}/>)
-          }
+            }
+
         </tbody>
-      </Table>
-      <StudyPlanForm/>
-      <Row>
-      <Col>
-        <Button>
-          SAVE
-        </Button>        
-      </Col>
-      <Col>
-        <Button onClick = {() => props.cancelEdit()}>
-          CANCEL
-        </Button>        
-      </Col>
-      <Col>
-        <Button>
-          DELETE
-        </Button>
-      </Col> 
-      </Row>
-    </>
+      </Table>   
   );
 }
 
@@ -90,7 +103,6 @@ function CourseAction(props){
 
 function StudyPlanForm(props){
 
-  // If the exam already exists we configure the form, otherwise we use default values.
   const [course, setCourse] = useState('');
 
  
@@ -117,4 +129,4 @@ function StudyPlanForm(props){
   )  
 }
 
-export default StudyPlanTable;
+export default StudyPlanInfos;

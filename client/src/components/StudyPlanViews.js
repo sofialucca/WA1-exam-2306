@@ -2,8 +2,8 @@ import { Row, Col,Button } from 'react-bootstrap';
 
 import CourseTable from './CourseTable.js';
 import { LoginForm } from './AuthComponents';
-import StudyPlanTable from './StudyPlanComponents.js';
-
+import StudyPlanInfos from './StudyPlanComponents.js';
+import StudyPlanCreator from './StudyPlanCreator.js';
 function DefaultRoute() {
     return(
         <>
@@ -61,7 +61,7 @@ function LoginRoute(props){
       </Row>
       <Row>
         <Col>
-          <LoginForm login={props.login} />
+          <LoginForm login={props.login} loggedIn = {props.loggedIn} />
         </Col>
       </Row>
     </>
@@ -79,11 +79,12 @@ function StudyPlanRoute(props){
         </Row>
         <Row>
          <Col>
-            {props.studyPlan ? 
-              <StudyPlanTable studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse} cancelEdit = {props.cancelEdit}/> :
-              <Button>NEW STUDY PLAN</Button>
-            }
+            {props.studyPlan !== null ? 
+              <StudyPlanInfos studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse} cancelEdit = {props.cancelEdit} deleteStudyPlan = {props.deleteStudyPlan}/> :
+              
+              <StudyPlanCreator createStudyPlan = {props.createStudyPlan}/>
             
+            }
           </Col>
         </Row>      
         <Row>

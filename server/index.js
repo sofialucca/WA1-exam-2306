@@ -70,8 +70,46 @@ app.get('/api/courses',  (request, response) => {
     .catch(() => response.status(500).end());
   });
 
+//PUT /api/courses/:code
+app.put('/api/courses/:code', 
+  [
+    isLoggedIn,
+    check('code').isLength({min:7, max:7}) 
+  ], async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty())
+    return res.status(422).json({errors: errors.array()});
+
+  const courseToUpdate = req.body;
+  if(req.params.code === courseToUpdate.code) {
+    try {
+      await dao.updateCourse(courseToUpdate);
+      res.status(200).end();
+    }
+    catch(err) {
+      console.error(err);
+      res.status(503).json({error: `Database error while updating ${courseToUpdate.code}.`});
+    }
+  }
+  else {
+    res.status(503).json({error: `Wrong exam code in the request body.`});
+  }
+});
+
+//POST /api/studyplans/:id/:type
+app.post('/api/studyplans/:id/:type', isLoggedIn, (request, response) => {
+  console.log("enter db");
+  studyPlan.createStudyPlan(request.params.id, request.params.type)
+  .then(data => response.status(201).end())
+  .catch(() => response.status(503).end());
+})
+
 // GET /api/studyplans/:id
-app.get('/api/studyplans/:id', isLoggedIn, (request, response) => {
+app.get('/api/studyplans/:id',
+[
+  isLoggedIn,
+  check('code').isLength({min:7, max:7}) 
+], (request, response) => {
 
   studyPlanDao.getStudyPlan(request.params.id)
   .then(studyPlan => response.json(studyPlan).status(200))
@@ -85,17 +123,8 @@ app.delete('/api/studyplans/:id', isLoggedIn, (request, response) => {
   .then(data => response.status(204))
   .catch(() => response.status(503).end());
 })
-// DELETE /api/studyplan/:id/courses/:code
-/*
-app.delete('/api/studyplan/:id/:code'), isLoggedIn, async (req, res) => {
-  
-  try {
-    await studyPlanDao.deleteCourseStudyPlan(req.params.id,req.params.code);
-    res.status(204).end();
-  } catch(err) {
-    res.status(503).json({ error: `Database error during the deletion of exam ${req.params.code}.`});
-  }  
-}*/
+
+
 
 /*** User APIs ***/
 
@@ -127,7 +156,6 @@ app.post('/api/sessions', passport.authenticate('local'), (req, res) => {
 
 // GET /api/sessions/current
 app.get('/api/sessions/current', (req, res) => {
-  //console.log('check aUTH');
   if(req.isAuthenticated()) {
     res.json(req.user).status(200);
   }else{

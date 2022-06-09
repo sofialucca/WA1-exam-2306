@@ -11,16 +11,16 @@ function NavbarStudyPlan(props) {
             <i className = "bi bi-journals fs-2"/>
             <Navbar.Brand href="/">
                 <label className='title-nav text-white vertical-centered'>
-                {(props.user.name !== undefined ? props.user.name : "")}  Study Plan
+                {(props.user !== null ? props.user.name : "")}  Study Plan
                 </label>
             </Navbar.Brand>
             <Navbar.Text>
                 <span className = "text-white vertical-centered ">
-                   {(props.user.name !== undefined ? "Hi: " + props.user.name : "")} 
+                   {(props.user !== null ? "Hi: " + props.user.name : "")} 
                 </span>
                 &nbsp;
                 <Link to = '/login' className = "text-light">
-                    <i className={"bi bi-person-circle fs-2" + (props.user.name !== undefined ? "": " not-logged-icon")} role="img" alt="logo user" />
+                    <i className={"bi bi-person-circle fs-2" + (props.user !== null ? "": " not-logged-icon")} role="img" alt="logo user" />
                 </Link>                
             </Navbar.Text>
 

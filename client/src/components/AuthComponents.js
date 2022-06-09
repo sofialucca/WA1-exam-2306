@@ -14,7 +14,7 @@ function LoginForm(props) {
       const credentials = { username, password };
       const result = props.login(credentials);
       if(result)
-      navigate('/studyplan');
+        navigate('/');
   };
 
   return (

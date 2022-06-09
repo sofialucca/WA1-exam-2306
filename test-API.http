@@ -11,3 +11,6 @@ GET http://localhost:3001/api/studyplans/302223 HTTP/1.1
 
 ###
 DELETE http://localhost:3001/api/studyplan/123456/02LSEOV HTTP/1.1
+
+###
+PUT http://localhost:3001/api/studyplans/789123/full HTTP/1.1
