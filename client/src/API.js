@@ -1,5 +1,5 @@
-import Course from './Course.js';
-import StudyPlan from './StudyPlan.js';
+import Course from './Course';
+import StudyPlan from './StudyPlan';
 
 const SERVER_URL = 'http://localhost:3001';
 
@@ -78,24 +78,28 @@ const getStudyPlan = async(id) => {
     throw errDetails;
   }
 }
+const updateStudyPlan = async(studyPlan) => {
 
-const deleteCourseStudyPlan = async(code,id) => {
+}
+
+const deleteStudyPlan = async(plan) => {
   try{
-    const response = await fetch(SERVER_URL + `/api/studyplan/${id}/courses/${code}`,
-      {
-        method: 'DELETE',
-        credentials: 'include',
-      }
-    );
+
+    const response = await fetch(SERVER_URL, `/api/studyplans/${plan.userId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    const message = await response.json();
     if(!response.ok){
-      const errMessage = await response.json();
-      throw errMessage;    
+      throw message;    
     }else{
-      return null;
+      return message;
     }
   }catch(err){
     throw new Error("Can't communicate with server");
   }
 }
-const API = {getAllCourses,logIn,logOut, getUserInfo, getStudyPlan, deleteCourseStudyPlan};
+
+const API = {getAllCourses,logIn,logOut, getUserInfo, getStudyPlan, deleteStudyPlan};
 export default API;

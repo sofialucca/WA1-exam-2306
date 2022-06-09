@@ -1,9 +1,10 @@
 'use strict'
 
-function StudyPlan(plan, type, id){
-    this.type = type;
+function StudyPlan(plan, id, type, totalCredits){
     this.courses = [...plan];
-    this.id = id;
+    this.userId = id;
+    this.type = type;
+    this.totalCredits = totalCredits;
 }
 
 exports.StudyPlan = StudyPlan;

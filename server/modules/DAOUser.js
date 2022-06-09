@@ -14,7 +14,7 @@ exports.getUser = (email, password) => {
         resolve(false); 
       }
       else {
-        const student = {id: row.matricola, username: row.email, name: row.name, totalCredits: row.totalCredits};
+        const student = {id: row.matricola, username: row.email, name: row.name};
         
         crypto.scrypt(password, row.salt, 32, function(err, hashedPassword) {
           if (err) reject(err);
@@ -39,7 +39,7 @@ exports.getUserById = (id) => {
         resolve({error: 'Student not found!'}); 
       }
       else {
-        const student = {id: row.matricola, username: row.email, name: row.name, totalCredits: row.totalCredits};
+        const student = {id: row.matricola, username: row.email, name: row.name};
         resolve(student);
       }
     });

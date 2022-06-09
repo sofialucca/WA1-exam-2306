@@ -69,7 +69,7 @@ function LoginRoute(props){
 }
 
 function StudyPlanRoute(props){
-  //console.log(props.studyPlan);
+
   return(
       <>
         <Row>
@@ -80,7 +80,7 @@ function StudyPlanRoute(props){
         <Row>
          <Col>
             {props.studyPlan ? 
-              <StudyPlanTable studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse}/> :
+              <StudyPlanTable studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse} cancelEdit = {props.cancelEdit}/> :
               <Button>NEW STUDY PLAN</Button>
             }
             

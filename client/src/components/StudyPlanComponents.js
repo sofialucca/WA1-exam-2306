@@ -1,10 +1,24 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { Table, Col, Button } from 'react-bootstrap';
+import { Table, Col, Button,Row, Form } from 'react-bootstrap';
 import  {useState} from 'react';
 
 function StudyPlanTable(props) {
-
+  
   return(<>
+      <Row>
+      <p>Type of studies: {props.studyPlan.type}</p>
+      </Row>
+      <Row>
+        <Col>
+          Credits chosen:{props.studyPlan.totalCredits} 
+        </Col>
+        <Col>
+          Minimum credits required: {props.studyPlan.type  === 'full-time' ? 60:20}
+        </Col>
+        <Col>
+          Maximum credits available: {props.studyPlan.type  === 'full-time' ? 80:40}
+        </Col>
+      </Row>
       <Table borderless >
         <thead>
           <tr>
@@ -21,6 +35,24 @@ function StudyPlanTable(props) {
           }
         </tbody>
       </Table>
+      <StudyPlanForm/>
+      <Row>
+      <Col>
+        <Button>
+          SAVE
+        </Button>        
+      </Col>
+      <Col>
+        <Button onClick = {() => props.cancelEdit()}>
+          CANCEL
+        </Button>        
+      </Col>
+      <Col>
+        <Button>
+          DELETE
+        </Button>
+      </Col> 
+      </Row>
     </>
   );
 }
@@ -49,10 +81,39 @@ function CourseData(props) {
 function CourseAction(props){
   return(
     <td >
-      <Button variant='outline-danger' onClick={() => {props.deleteCourse(props.course.code)}}>
+      <Button variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
           <i className='bi bi-trash3'></i>
       </Button>
     </td>
+  )  
+}
+
+function StudyPlanForm(props){
+
+  // If the exam already exists we configure the form, otherwise we use default values.
+  const [course, setCourse] = useState('');
+
+ 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+
+  }
+  
+  return(
+    <Form onSubmit={handleSubmit}>
+      <Form.Group className="mb-3">
+        <Form.Label>Course</Form.Label>
+        <Form.Select onChange={event => setCourse(event.target.value)}>
+          <option>Select a course</option>
+
+        </Form.Select>
+      </Form.Group>
+
+
+      <Button variant="primary" type="submit">ADD</Button>
+
+    </Form>
   )  
 }
 

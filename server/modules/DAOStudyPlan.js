@@ -1,7 +1,7 @@
 'use strict';
 
-const sqlite = require('sqlite3');
-const {Course} = require('./Course');
+
+const {Course} = require("./Course");
 const {StudyPlan} = require("./StudyPlan");
 
 const { db } = require('./db');
@@ -31,7 +31,7 @@ exports.listCourses = () => {
 
 exports.getStudyPlan = (id) => {
     return new Promise((resolve,reject) => {
-        const sql = "SELECT * FROM courses , studyPlan  WHERE  code = courseCode AND studentMatricola = ?";
+        const sql = "SELECT * FROM courses , studyPlan, UserCourse  WHERE  code = courseCode AND studentMatricola = ? AND studentMatricola = student";
         db.all(sql, [id], (err,rows) => {
             if(err)
                 reject(err);
@@ -39,9 +39,9 @@ exports.getStudyPlan = (id) => {
                 if(rows){
                   const courses = rows.map(
                                         (row) =>
-                                        new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatibel,row.preparatory)
+                                        new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible,row.preparatory)
                                     );
-                    resolve(new StudyPlan(courses, rows[0].type, id));  
+                    resolve(new StudyPlan(courses, id, rows[0].type, rows[0].totalCredits));  
                 }else
                     resolve(null);
             }
@@ -49,6 +49,16 @@ exports.getStudyPlan = (id) => {
         })
     })
 };
+
+exports.deleteStudyPlan = (id) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM StudyPlan WHERE student = ?';
+        db.run(sql, [id], (err) => {
+          if (err) reject(err);
+          else resolve(null);
+        });
+    })
+}
 
 exports.deleteCourseStudyPlan = (id,code) => {
     return new Promise((resolve, reject) => {
@@ -71,3 +81,4 @@ exports.addCourseStudyPlan = (id,course,type) => {
         });
     });
 }
+

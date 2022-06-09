@@ -76,8 +76,15 @@ app.get('/api/studyplans/:id', isLoggedIn, (request, response) => {
   .catch(() => response.status(500).end());
 })
 
-// DELETE /api/studyplan/:id/courses/:code
+// DELETE /api/studyplans/:id
+app.delete('/api/studyplans/:id', isLoggedIn, (request, response) => {
 
+  studyPlanDao.deleteStudyPlan(request.params.id)
+  .then(data => response.status(204))
+  .catch(() => response.status(503).end());
+})
+// DELETE /api/studyplan/:id/courses/:code
+/*
 app.delete('/api/studyplan/:id/:code'), isLoggedIn, async (req, res) => {
   
   try {
@@ -86,7 +93,7 @@ app.delete('/api/studyplan/:id/:code'), isLoggedIn, async (req, res) => {
   } catch(err) {
     res.status(503).json({ error: `Database error during the deletion of exam ${req.params.code}.`});
   }  
-}
+}*/
 
 /*** User APIs ***/
 

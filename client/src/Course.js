@@ -1,3 +1,5 @@
+'use strict';
+
 function Course(code,name,credits, maxStudents, incompatible,preparatory, signedStudents){
     this.code = code;
     this.name = name;
