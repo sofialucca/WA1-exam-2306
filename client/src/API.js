@@ -5,11 +5,10 @@ const SERVER_URL = 'http://localhost:3001';
 
 const getAllCourses = async () => {
   
-    const response = await fetch(SERVER_URL + '/api/courses'/*, {
-      credentials: 'include',
-    }*/);
+    const response = await fetch(SERVER_URL + '/api/courses');
 
     const coursesJson = await response.json();
+
     if(response.ok) {
       return coursesJson.map(c => new Course(c.code, c.name, c.credits, c.maxStudents, c.incompatible, c.preparatory, c.signedStudents));
     }
@@ -40,11 +39,9 @@ const logIn = async(credentials) => {
 }
 
 const getUserInfo = async () => {
-  //console.log('TRY CURRENT SESSION');
   const response = await fetch(SERVER_URL + '/api/sessions/current', {
-    credentials: 'include',
+    //credentials: 'include',
   });
-  console.log('current session worked');
   const user = await response.json();
   if (response.ok) {
     return user;

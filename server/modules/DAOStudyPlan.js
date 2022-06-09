@@ -7,22 +7,49 @@ const {StudyPlan} = require("./StudyPlan");
 const { db } = require('./db');
 
 //get all Courses
-
-exports.listCourses = () => {
+exports.incompatibleCourses = (code) => {
     return new Promise((resolve,reject) => {
-        const sql = 'SELECT * FROM Courses ORDER BY name';
-        db.all(sql, [], (err,rows) => {
-            console.log("enter db");
+
+        const sql = 'SELECT * FROM IncompatibleCourses WHERE courseCode = ?';
+        db.all(sql, [code], (err,rows) => {
             if(err) reject(err);
             else{
                 rows
                 ? resolve(
                     rows.map(
-                      (row) =>
-                        new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible ? row.incompatible.split(" "):null,row.preparatory, row.enrolledStudents)
+                      (row) =>row.incompatibleCourse
                     )
                   )
                 : resolve(null);
+
+            }
+        })
+    })
+}
+
+exports.listCourses = () => {
+    return new Promise(async function(resolve,reject){
+        const sql = 'SELECT * FROM Courses,IncompatibleCourses WHERE courseCode = code  ORDER BY name';
+        db.all(sql, [], (err,rows) => {
+
+            if(err) reject(err);
+            else{
+                let lastAdded;
+                if(rows){
+                    const courses = [];
+                    for(let row of rows){
+                        if(lastAdded !== row.code){
+                            lastAdded = row.code;
+                            courses.push(new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatibleCourse,row.preparatory, row.enrolledStudents))
+                            
+                        }else
+                            courses[courses.length - 1].incompatible.push(row.incompatibleCourse);                        
+                    }
+
+                    resolve(courses);
+                }                    
+                else 
+                    resolve(null);
 
             }
         })

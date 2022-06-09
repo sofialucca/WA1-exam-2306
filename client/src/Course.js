@@ -5,7 +5,7 @@ function Course(code,name,credits, maxStudents, incompatible,preparatory, signed
     this.name = name;
     this.credits = credits;
     this.maxStudents = maxStudents;
-    this.incompatible = incompatible ? [...incompatible] : null ;
+    this.incompatible = incompatible ;
     this.preparatory = preparatory;
     this.signedStudents = signedStudents;
 
@@ -18,6 +18,7 @@ function Course(code,name,credits, maxStudents, incompatible,preparatory, signed
     }
 
     this.printIncompatible = () => {
+
         if(!this.incompatible){
             return `${this.name} doesn't have any incompatible course`
         }

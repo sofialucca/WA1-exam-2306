@@ -61,10 +61,12 @@ app.use(passport.authenticate('session'));
 /*** APIs ***/
 
 // GET /api/courses
-app.get('/api/courses', (request, response) => {
+app.get('/api/courses',  (request, response) => {
 
   studyPlanDao.listCourses()
-    .then(courses => response.json(courses).status(200))
+    .then((courses) =>{
+      return response.json(courses).status(200)      
+    })
     .catch(() => response.status(500).end());
   });
 
@@ -125,11 +127,13 @@ app.post('/api/sessions', passport.authenticate('local'), (req, res) => {
 
 // GET /api/sessions/current
 app.get('/api/sessions/current', (req, res) => {
-  console.log('check aUTH');
+  //console.log('check aUTH');
   if(req.isAuthenticated()) {
-    res.json(req.user).status(200);}
-  else
+    res.json(req.user).status(200);
+  }else{
     res.status(401);
+  }
+    
 });
 
 // DELETE /api/session/current
