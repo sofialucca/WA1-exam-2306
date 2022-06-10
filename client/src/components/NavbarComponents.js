@@ -11,7 +11,7 @@ function NavbarStudyPlan(props) {
             <i className = "bi bi-journals fs-2"/>
             <Navbar.Brand href="/">
                 <label className='title-nav text-white vertical-centered'>
-                {(props.user !== null ? props.user.name : "")}  Study Plan
+                {(props.user !== null ? props.user.name + " " : "")}Study Plan
                 </label>
             </Navbar.Brand>
             <Navbar.Text>

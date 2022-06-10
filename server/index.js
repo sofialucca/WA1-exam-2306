@@ -98,9 +98,9 @@ app.put('/api/courses/:code',
 
 //POST /api/studyplans/:id/:type
 app.post('/api/studyplans/:id/:type', isLoggedIn, (request, response) => {
-  console.log("enter db");
-  studyPlan.createStudyPlan(request.params.id, request.params.type)
-  .then(data => response.status(201).end())
+  //console.log("enter post");
+  studyPlanDao.createStudyPlan(request.params.id, request.params.type)
+  .then(data => response.status(201))
   .catch(() => response.status(503).end());
 })
 

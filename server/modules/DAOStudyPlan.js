@@ -68,7 +68,7 @@ exports.updateCourse = (course) => {
 
 exports.getStudyPlan = (id) => {
     return new Promise((resolve,reject) => {
-        const sql = "SELECT * FROM studyPlan  LEFT JOIN (courses INNER JOIN  UserCourse ON code = courseCode ) ON studentMatricola = student WHERE student = ?" ;
+        const sql = "SELECT * FROM StudyPlan  LEFT JOIN (courses INNER JOIN  UserCourse ON code = courseCode ) ON studentMatricola = student WHERE student = ?" ;
         db.all(sql, [id], (err,rows) => {
             if(err)
                 reject(err);
@@ -101,8 +101,7 @@ exports.deleteStudyPlan = (id) => {
 
 exports.createStudyPlan = (id, type) => {
     return new Promise((resolve, reject) => {
-
-        const sql = 'INSERT INTO StudyPlan(student, type) VALUES(?, ?)';
+        const sql = 'INSERT INTO StudyPlan(student, type) VALUES (?, ?)';
         db.run(sql, [id,type], function (err) {
           if (err) 
             reject(err);

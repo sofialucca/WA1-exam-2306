@@ -92,13 +92,15 @@ function App() {
       
       const user = await API.logIn(credentials);
       setLoggedIn(true);
-      setMessage({msg: `Welcome, ${user.name}!`, type: 'success'});
+      setMessage('');
       setUser({...user});
       getStudyPlan(user.id);
       return true;
     }catch(err) {
-      console.log(err);
+      //console.log(err);
       setMessage({msg: err, type: 'danger'});
+      console.log(loggedIn);
+      return false;
     }
   };
 //TODO check why doesn't work when i have message
@@ -118,14 +120,14 @@ function App() {
         <Row className = "sticky-top">
           <NavbarStudyPlan user = {user}/>
         </Row>
-        {message && <Row>
+        {/*message && <Row>
           <Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert>
-        </Row> }        
+        </Row> */}        
         <Routes>
           <Route path='*' element={<DefaultRoute />} />      
           <Route path = '/login' element = {<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>/*loggedIn ? <Navigate replace to = '/studyplan'/>:*/ }/>
           <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
-          <Route path = "/logout" element = {loggedIn ? <LogoutRoute logout = {handleLogout}/> :  <Navigate replace to = '/'/>}/>
+          <Route path = "/logout" element = {loggedIn ? <LogoutRoute user = {user} logout = {handleLogout} studyPlan = {studyPlan}/> :  <Navigate replace to = '/'/>}/>
 
           {/*<Route path="/studyplan" element = {<Navigate replace to = '/login'/> }/>*/}
         </Routes>

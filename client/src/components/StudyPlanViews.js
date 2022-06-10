@@ -2,8 +2,10 @@ import { Row, Col,Button } from 'react-bootstrap';
 
 import CourseTable from './CourseTable.js';
 import { LoginForm, LogoutButton } from './AuthComponents';
-import StudyPlanInfos from './StudyPlanComponents.js';
+import StudyPlanForm from './StudyPlanComponents.js';
 import StudyPlanCreator from './StudyPlanCreator.js';
+import StudyPlanInfos from './StudyPlanInfos'
+
 function DefaultRoute() {
     return(
         <>
@@ -22,6 +24,14 @@ function LogoutRoute(props){
     <>
       <Row>
         <Col>
+          <h1 className = 'title-table'>
+            {props.user.name}'s Study Plan
+          </h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <StudyPlanInfos studyPlan = {props.studyPlan} editable = {false}/>
           <LogoutButton logout = {props.logout}/>
         </Col>
       </Row>
@@ -69,13 +79,13 @@ function StudyPlanRoute(props){
       <>
         <Row>
           <Col>
-            <h1 className = 'title-table'>Study Plan</h1>
+            <h1 className = 'title-table'> Edit Study Plan</h1>
           </Col>
         </Row>
         <Row>
          <Col>
             {props.studyPlan !== null ? 
-              <StudyPlanInfos studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse} cancelEdit = {props.cancelEdit} deleteStudyPlan = {props.deleteStudyPlan}/> :
+              <StudyPlanForm studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse} cancelEdit = {props.cancelEdit} deleteStudyPlan = {props.deleteStudyPlan}/> :
               
               <StudyPlanCreator createStudyPlan = {props.createStudyPlan}/>
             

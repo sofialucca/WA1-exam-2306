@@ -13,8 +13,10 @@ function LoginForm(props) {
       event.preventDefault();
       const credentials = { username, password };
       const result = props.login(credentials);
-      if(result)
+      if(result){
         navigate('/');
+      }
+        
   };
 
   return (
@@ -35,10 +37,13 @@ function LoginForm(props) {
 };
 
 function LogoutButton(props) {
+  const handleOnClick = (event) => {
+
+  }
   return(
     <Row>
       <Col>
-        <Button variant="outline-primary" onClick={() => {props.logout()}}>Logout</Button>
+        <Button variant="outline-danger" onClick={props.logout}>Logout</Button>
       </Col>
     </Row>
   )

@@ -108,7 +108,7 @@ const deleteStudyPlan = async(plan) => {
 const createStudyPlan = async(id, type) => {
   const response = await fetch(SERVER_URL+ `/api/studyplans/${id}/${type}`,
     {
-      method: 'PUT',
+      method: 'POST',
       credentials: 'include',
     });
   const message = await response.json();
