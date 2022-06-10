@@ -120,7 +120,10 @@ app.get('/api/studyplans/:id',
 app.delete('/api/studyplans/:id', isLoggedIn, (request, response) => {
 
   studyPlanDao.deleteStudyPlan(request.params.id)
-  .then(data => response.status(204))
+  .then(data => {
+    studyPlanDao.deleteAllCoursesStudyPlan(request.params.id)
+    .then(data => response.status(204))
+  })
   .catch(() => response.status(503).end());
 })
 

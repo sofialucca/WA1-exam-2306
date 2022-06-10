@@ -77,7 +77,7 @@ exports.getStudyPlan = (id) => {
                     const courses = (rows[0].code !== null) ?
                         rows.map(
                             (row) =>
-                                new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible,row.preparatory)
+                                new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible,row.preparatory, row.enrolledStudents)
                             )
                         :null;
                     resolve(new StudyPlan(courses, id, rows[0].type, rows[0].totalCredits));  
@@ -99,6 +99,15 @@ exports.deleteStudyPlan = (id) => {
     })
 }
 
+exports.deleteAllCoursesStudyPlan = (id) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM UserCourse WHERE studentMatricola = ?';
+        db.run(sql, [id], (err) => {
+          if (err) reject(err);
+          else resolve(null);
+        });
+    })    
+}
 exports.createStudyPlan = (id, type) => {
     return new Promise((resolve, reject) => {
         const sql = 'INSERT INTO StudyPlan(student, type) VALUES (?, ?)';

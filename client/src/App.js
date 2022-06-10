@@ -43,10 +43,11 @@ function App() {
     getStudyPlan(user.id);
     getCourses();
   }
-  //TODO delete and save study plan
+  //TODO save study plan
   const deleteStudyPlan = async() => {
     studyPlan.courses.forEach((course) =>
       {
+        course.signedStudents--;
         setCourses( oldCourses => oldCourses.map(c => 
           c.code === course.code ? 
             new Course(c.code, c.name, c.credits, c.maxStudents, c.incompatible, c.preparatory, c.signedStudents - 1)
@@ -57,7 +58,7 @@ function App() {
     const plan = studyPlan;
     setStudyPlan(null);
     await API.deleteStudyPlan(plan);
-    await API.modifyCourses(plan.courses, 'add');
+    await API.modifyCourses(plan.courses);
     getStudyPlan(user.id);
     getCourses();
   }

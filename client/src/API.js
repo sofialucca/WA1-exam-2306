@@ -119,7 +119,7 @@ const createStudyPlan = async(id, type) => {
   }
 }
 
-const modifyCourses = async(courses, type) => {
+const modifyCourses = async(courses) => {
   let response;
   courses.forEach(async(course) => {
   response = await fetch(SERVER_URL + `/api/courses/${course.code}`,
@@ -133,7 +133,7 @@ const modifyCourses = async(courses, type) => {
             credits: course.credits,
             maxStudents: course.maxStudents,
             preparatory: course.preparatory,
-            signedStudents: type === "add" ? course.signedStudents -1:course.signedStudents +1,
+            signedStudents: course.signedStudents,
           }
         ),
         credentials: 'include'
