@@ -28,13 +28,22 @@ function App() {
     setStudyPlan(studyPlan);   
   }
 
-  const deleteCourseStudyPlan = async(course) => {
+  const deleteCourseStudyPlan = (course) => {
     const limitations = (studyPlan.isDeletable(course.code));
 
     if(!limitations.length){
-      setCoursesUpdate(oldCourses =>
-        [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents-1)]  
-      )
+      setCoursesUpdate(oldCourses =>{
+        console.log(course);
+        console.log(oldCourses);
+        console.log(oldCourses.length !== 0 && oldCourses.some(oc => oc.code === course.code))
+        if(oldCourses.length !== 0 && oldCourses.some(oc => oc.code === course.code)){
+          console.log('already');
+          return oldCourses.filter(oc => oc.code !== course.code);
+        }else{
+          return [new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents-1),...oldCourses ];  
+        }
+      })
+
       setStudyPlan(oldStudyPlan => {
 
         return new StudyPlan(
@@ -42,18 +51,25 @@ function App() {
           user.id,
           oldStudyPlan.type,
           oldStudyPlan.totalCredits-course.credits);
-      });      
+      });     
+      console.log(coursesToUpdate); 
     }
 
   }
 
   //TODO check on max credits
-  const addCourseStudyPlan = async(course) => {
+  const addCourseStudyPlan = (course) => {
     if(studyPlan.notAllowedCourses.every(c => c !== course.code) && !course.isFull() ){
+      setCoursesUpdate(oldCourses =>{
+        console.log(oldCourses.some(oc => oc.code === course.code));
+        if(oldCourses.some(oc => oc.code === course.code))
+          return oldCourses.filter(oc => oc.code !== course.code)
+        else
+          return [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents+1)]  
+      })
+      console.log(coursesToUpdate);     
       setStudyPlan(oldStudyPlan => {
-        setCoursesUpdate(oldCourses =>
-          [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents+1)]  
-        )
+
         return new StudyPlan(
           [...oldStudyPlan.courses, course],
           user.id,
@@ -62,9 +78,10 @@ function App() {
       });       
     }
   }
-  const cancelEditingStudyPlan = async() => {
+  const cancelEditingStudyPlan = () => {
     getStudyPlan(user.id);
     getCourses();
+    setCoursesUpdate([]);
   }
   //TODO save study plan
   const deleteStudyPlan = async() => {
@@ -78,10 +95,12 @@ function App() {
           ));  
       }  
     )
-    const plan = studyPlan;
+
+    const plan = new StudyPlan(studyPlan.courses,studyPlan.userId,studyPlan.type,studyPlan.totalCredits);
     setStudyPlan(null);
+
+    await plan.courses.forEach(async (c) => await API.modifyCourse(c));
     await API.deleteStudyPlan(plan);
-    await API.modifyCourses(plan.courses);
     getStudyPlan(user.id);
     getCourses();
   }
@@ -89,6 +108,24 @@ function App() {
     setStudyPlan(new StudyPlan(null,user.id,type,0));
     await API.createStudyPlan(user.id,type);
     getStudyPlan(user.id);
+  }
+
+  const saveStudyPlan = async() => {
+
+    setCourses(oldCourses => {
+      oldCourses.map(c => {
+        const newCourse = coursesToUpdate.filter(cu => cu.code === c.code);
+        if(newCourse.length !== 0)
+          return newCourse.pop()
+        else
+          return c
+      })
+    }) 
+    
+    await API.modifyStudyPlan(studyPlan);
+    await API.modifyCourses(coursesToUpdate);
+    getStudyPlan(user.id);
+    getCourses();
   }
   useEffect(() => {
     
@@ -107,7 +144,7 @@ function App() {
     
     getCourses();
     
-
+    setCoursesUpdate([]);
   }, []);
 
 

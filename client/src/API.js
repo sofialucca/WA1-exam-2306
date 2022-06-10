@@ -119,21 +119,17 @@ const createStudyPlan = async(id, type) => {
   }
 }
 
-const modifyCourses = async(courses) => {
-  let response;
-  courses.forEach(async(course) => {
-  response = await fetch(SERVER_URL + `/api/courses/${course.code}`,
+const modifyStudyPlan = async(studyPlan) => {
+  const response = await fetch(SERVER_URL + `/api/studyplans/${studyPlan.userId}`,
     {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(
           {
-            code: course.code,
-            name:course.name,
-            credits: course.credits,
-            maxStudents: course.maxStudents,
-            preparatory: course.preparatory,
-            signedStudents: course.signedStudents,
+            userId: studyPlan.userId,
+            totalCredits:studyPlan.totalCredits,
+            credits: studyPlan.credits,
+            courses: studyPlan.courses
           }
         ),
         credentials: 'include'
@@ -142,9 +138,32 @@ const modifyCourses = async(courses) => {
     const errMessage = await response.json();
     throw errMessage;        
   }
+}
 
-  })
-  return null;
+const modifyCourse = async(course) => {
+  console.log(course);
+  const response = await fetch(SERVER_URL + `/api/courses/${course.code}`,
+      {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(
+            {
+              code: course.code,
+              name:course.name,
+              credits: course.credits,
+              maxStudents: course.maxStudents,
+              preparatory: course.preparatory,
+              signedStudents: course.signedStudents,
+            }
+          ),
+          credentials: 'include'
+        });
+  if(!response.ok){
+      const errMessage = await response.json();
+      throw errMessage;        
+  }else{
+      console.log(response);
+  }
   /*  
   if(response.ok) {
     return null;
@@ -155,5 +174,5 @@ const modifyCourses = async(courses) => {
   }*/
 
 }
-const API = {getAllCourses,logIn,logOut, getUserInfo, getStudyPlan, deleteStudyPlan, modifyCourses,createStudyPlan};
+const API = {getAllCourses,logIn,logOut, getUserInfo, getStudyPlan, deleteStudyPlan, modifyCourse,createStudyPlan};
 export default API;

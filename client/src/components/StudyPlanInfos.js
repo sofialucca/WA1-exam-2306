@@ -56,7 +56,7 @@ function StudyPlanTable(props) {
   function CourseRow(props) {
   
       return(
-          <tr>
+          <tr className = "row-separation">
             <CourseData course={props.course}/> 
           </tr>
   

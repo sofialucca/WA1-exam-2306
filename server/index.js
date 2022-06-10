@@ -74,16 +74,16 @@ app.get('/api/courses',  (request, response) => {
 app.put('/api/courses/:code', 
   [
     isLoggedIn,
-    check('code').isLength({min:7, max:7}) 
+    //check('code').isLength({min:7, max:7}) 
   ], async (req, res) => {
   const errors = validationResult(req);
   if(!errors.isEmpty())
     return res.status(422).json({errors: errors.array()});
-
+  console.log('ENTERED');
   const courseToUpdate = req.body;
   if(req.params.code === courseToUpdate.code) {
     try {
-      await dao.updateCourse(courseToUpdate);
+      await studyPlanDao.updateCourse(courseToUpdate);
       res.status(200).end();
     }
     catch(err) {
@@ -98,7 +98,7 @@ app.put('/api/courses/:code',
 
 //POST /api/studyplans/:id/:type
 app.post('/api/studyplans/:id/:type', isLoggedIn, (request, response) => {
-  //console.log("enter post");
+
   studyPlanDao.createStudyPlan(request.params.id, request.params.type)
   .then(data => response.status(201))
   .catch(() => response.status(503).end());

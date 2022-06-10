@@ -1,6 +1,6 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Table, Col, Button } from 'react-bootstrap';
-import  {useState} from 'react';
+import  {useState, useEffect} from 'react';
 
 function CourseTableForm(props) {
   return(<>
@@ -33,22 +33,63 @@ function CourseTableForm(props) {
 
 function CourseRow(props) {
     const [expanded, setExpanded] = useState(false);
-
+    const [deleteLimitations, setDeleteLimitations] = useState([]);
+    const [addLimitations, setAddLimitations] = useState([]);
     const showInfoCourse = () => {
         setExpanded(oldStatus => !oldStatus);
     }
+    /*
+    const printDeleteLimitations= () => {
+      if(deleteLimitations.length > 1)
+        return(
+        <ul>
+          {deleteLimitations.map(c => <li key = {c.code}>{c.code} - {c.name}</li>)}
+        </ul>)
+      return(
+        <span>
+          {deleteLimitations[0].code - deleteLimitations[0].name}
+        </span>
+      )                     
+
+    }*/
+    useEffect(() => {
+      
+      if(props.studyPlan && props.studyPlan.isInPlan(props.course.code)){
+        setDeleteLimitations([...props.studyPlan.isDeletable(props.course.code)]);
+      }
+
+      if(props.StudyPlan && !props.StudyPlan.isInPlan(props.course.code)){
+        console.log(props.studyPlan.isIncompatible("ciao" + props.course.code));  
+        setAddLimitations([...props.studyPlan.isIncompatible(props.course.code)]);
+        
+      }
+      
+    },[props.studyPlan])
+    
     return(
         <>
-            <tr className = {expanded? "":"row-separation"}>
-                <CourseAction course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
+            <tr className = {(expanded || deleteLimitations.length)? "":"row-separation"}>
+                <CourseAction isDeletable = {deleteLimitations.length} isAddable = {addLimitations.length} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
                 <CourseData course={props.course}/>
                 <td>
-                  <Button className = "button-course"  onClick = {showInfoCourse}>
+                  <Button variant = "outline-white" className = "button-course"  onClick = {showInfoCourse}>
                       <i className = {`bi bi-caret-${expanded ? 'up-fill' : 'down-fill' }`}/>
                   </Button>                    
                 </td>
    
             </tr>
+
+              {
+                (deleteLimitations.length !== 0) ?
+                (<tr className = {(expanded)? "":"row-separation"}>
+                  <td colSpan = "7">
+                    {props.course.name} is preparatory for <br/>
+                    <ul>
+                      {deleteLimitations.map(c => <li key = {c.code}>{c.code} - {c.name}</li>)}
+                    </ul>
+                  </td>
+                </tr>):(<></>)
+              }
             
             <tr className = {expanded? "row-separation":"d-none"}>
                 <CourseDescription course={props.course} />   
@@ -62,14 +103,14 @@ function CourseAction(props){
     return(
       <td >
         {
-            (props.studyPlan && props.studyPlan.courses.some(c => c.code === props.course.code)) ?
+            (props.studyPlan && props.studyPlan.isInPlan(props.course.code)) ?
             <>
-                <Button variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
+                <Button disabled = {props.isDeletable} variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
                     <i className='bi bi-trash3'></i>
                 </Button>                
             </>
             :<>
-                <Button variant='outline-success' onClick = {() => {props.addCourseStudyPlan(props.course)}} >
+                <Button disabled = {props.isAddable} variant='outline-success' onClick = {() => {props.addCourseStudyPlan(props.course)}} >
                     <i className='bi bi-check-lg'></i>
                 </Button>                   
             </>

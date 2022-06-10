@@ -12,17 +12,17 @@ function StudyPlanForm(props){
       
       <Row>
         <Col>
-          <Button>
+          <Button variant = "outline-success">
             SAVE
           </Button>        
         </Col>
         <Col>
-          <Button onClick = {() => props.cancelEdit()}>
+          <Button variant = "outline-warning" onClick = {() => props.cancelEdit()}>
             CANCEL
           </Button>        
         </Col>
         <Col>
-          <Button onClick =  {() => props.deleteStudyPlan()}>
+          <Button variant = "outline-danger" onClick =  {() => props.deleteStudyPlan()}>
             DELETE
           </Button>
         </Col> 

@@ -17,6 +17,9 @@ function StudyPlan(plan, id, type, totalCredits){
         })
     }
 
+    this.isInPlan = (code)=>{
+        return this.courses.some(c => c.code === code)
+    }
     this.isDeletable = (code) => {
         return this.courses.filter (c => c.preparatory === code)
     }
@@ -26,10 +29,7 @@ function StudyPlan(plan, id, type, totalCredits){
     }
 
     this.isIncompatible = (code) => {
-        return this.courses.map(c =>{ 
-            if(c.incompatible.some(c => c === code)){
-                return c;
-        }})
+        return this.courses.filter(c =>c.incompatible.some(c => c === code))
     }
     this.limitationCourse = (course) => {
         const limitations = {
