@@ -7,10 +7,9 @@ function StudyPlanForm(props){
 
   return(
     <>
-      <StudyPlanInfos studyPlan = {props.studyPlan}
-        deleteCourse = {props.deleteCourse} editable = {true}
-      />
-      <CourseForm/>
+      <StudyPlanInfos studyPlan = {props.studyPlan}/>
+      {/*<CourseForm courses = {props.courses}/>*/}
+      
       <Row>
         <Col>
           <Button>
@@ -47,16 +46,23 @@ function CourseForm(props){
   
   return(
     <Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3">
-        <Form.Label>Course</Form.Label>
-        <Form.Select onChange={event => setCourse(event.target.value)}>
-          <option>Select a course</option>
+      
+        <Form.Group className="mb-3" as= {Row}>
+        
+          <Form.Label column sm = {2}>Course</Form.Label>
+        
+          <Col sm = {8}>
+          <Form.Select onChange={event => setCourse(event.target.value)}>
+            <option>Select a course</option>
 
-        </Form.Select>
-      </Form.Group>
+          </Form.Select>            
+          </Col>
+        
+        <Col>
+          <Button variant="primary" type="submit">ADD</Button> 
+        </Col>
+        </Form.Group>
 
-
-      <Button variant="primary" type="submit">ADD</Button>
 
     </Form>
   )  

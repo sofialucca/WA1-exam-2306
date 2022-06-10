@@ -17,7 +17,7 @@ function StudyPlanCreator(props) {
                 id="default-radio-full"
                 label="Full-time"
                 name = "type-plan"
-                onClick = {() => {setType('full')}}
+                onClick = {() => {setType('full-time')}}
             />
 
             <Form.Check

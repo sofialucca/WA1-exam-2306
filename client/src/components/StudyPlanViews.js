@@ -5,7 +5,7 @@ import { LoginForm, LogoutButton } from './AuthComponents';
 import StudyPlanForm from './StudyPlanComponents.js';
 import StudyPlanCreator from './StudyPlanCreator.js';
 import StudyPlanInfos from './StudyPlanInfos'
-
+import CourseTableForm from './CourseTableForm.js';
 function DefaultRoute() {
     return(
         <>
@@ -31,7 +31,7 @@ function LogoutRoute(props){
       </Row>
       <Row>
         <Col>
-          <StudyPlanInfos studyPlan = {props.studyPlan} editable = {false}/>
+          <StudyPlanInfos studyPlan = {props.studyPlan}/>
           <LogoutButton logout = {props.logout}/>
         </Col>
       </Row>
@@ -85,9 +85,17 @@ function StudyPlanRoute(props){
         <Row>
          <Col>
             {props.studyPlan !== null ? 
-              <StudyPlanForm studyPlan={props.studyPlan} deleteCourse = {props.deleteCourse} cancelEdit = {props.cancelEdit} deleteStudyPlan = {props.deleteStudyPlan}/> :
+              <StudyPlanForm 
+                studyPlan={props.studyPlan} 
+                deleteCourse = {props.deleteCourse} 
+                cancelEdit = {props.cancelEdit} 
+                deleteStudyPlan = {props.deleteStudyPlan}  
+              /> :
               
-              <StudyPlanCreator createStudyPlan = {props.createStudyPlan}/>
+              <StudyPlanCreator 
+                createStudyPlan = {props.createStudyPlan} 
+
+              />
             
             }
           </Col>
@@ -99,7 +107,12 @@ function StudyPlanRoute(props){
         </Row>
         <Row>
           <Col>
-            <CourseTable courses={props.courses} />
+            <CourseTableForm 
+              courses={props.courses} 
+              studyPlan = {props.studyPlan} 
+              deleteCourse = {props.deleteCourse}
+              addCourseStudyPlan = {props.addCourseStudyPlan}
+            />
           </Col>
         </Row>
 

@@ -10,14 +10,12 @@ function StudyPlanInfos(props){
         <p>Type of studies: {props.studyPlan.type}</p>
         </Row>
         <Row>
-          <Col>
-            Credits chosen:{props.studyPlan.totalCredits} 
-          </Col>
+
           <Col>
             Minimum credits required: {props.studyPlan.type  === 'full-time' ? 60:20}
           </Col>
           <Col>
-            Maximum credits available: {props.studyPlan.type  === 'full-time' ? 80:40}
+            Maximum credits available: {props.studyPlan.maxCredits}
           </Col>
       </Row>
       {
@@ -25,7 +23,12 @@ function StudyPlanInfos(props){
         <StudyPlanTable {...props}/> 
         :(<Row>NO COURSES</Row>)
       }
-    </>);
+      <Col>
+
+            Total credits:{props.studyPlan.totalCredits} 
+      </Col>
+    </>
+    );
 }
 
 function StudyPlanTable(props) {
@@ -36,17 +39,13 @@ function StudyPlanTable(props) {
             <tr>
               <th>Code</th>
               <th>Course Name</th>
-              {props.editable ? 
-              <><th>Credits</th>
-               <th>Actions</th></>
-               : <><th>Credits</th></>
-            }
+              <th>Credits</th>
             </tr> 
           </thead>
           <tbody>
               {
               props.studyPlan.courses.map((c) => 
-                <CourseRow course={c} key={`course-${c.code}`} deleteCourse = {props.deleteCourse} editable = {props.editable}/>)
+                <CourseRow course={c} key={`course-${c.code}`} />)
               }
   
           </tbody>
@@ -58,14 +57,7 @@ function StudyPlanTable(props) {
   
       return(
           <tr>
-            {props.editable ?
-                <>
-                    <CourseData course={props.course}/>  
-                    <CourseAction course = {props.course} deleteCourse = {props.deleteCourse}/>                      
-                </>
-                : <CourseData course={props.course}/> 
-            }
-            
+            <CourseData course={props.course}/> 
           </tr>
   
       );
@@ -81,13 +73,4 @@ function StudyPlanTable(props) {
     );
   }
   
-  function CourseAction(props){
-    return(
-      <td >
-        <Button variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
-            <i className='bi bi-trash3'></i>
-        </Button>
-      </td>
-    )  
-  }
 export default StudyPlanInfos;

@@ -29,7 +29,7 @@ exports.incompatibleCourses = (code) => {
 
 exports.listCourses = () => {
     return new Promise(async function(resolve,reject){
-        const sql = 'SELECT * FROM Courses LEFT JOIN IncompatibleCourses ON courseCode = code  ORDER BY name';
+        const sql = 'SELECT * FROM Courses LEFT JOIN IncompatibleCourses ON course = code  ORDER BY name';
         db.all(sql, [], (err,rows) => {
 
             if(err) reject(err);
@@ -68,18 +68,24 @@ exports.updateCourse = (course) => {
 
 exports.getStudyPlan = (id) => {
     return new Promise((resolve,reject) => {
-        const sql = "SELECT * FROM StudyPlan  LEFT JOIN (courses INNER JOIN  UserCourse ON code = courseCode ) ON studentMatricola = student WHERE student = ?" ;
+        const sql = "SELECT * FROM StudyPlan  LEFT JOIN ((courses INNER JOIN  UserCourse ON code = courseCode ) LEFT JOIN IncompatibleCourses ON course = code) ON studentMatricola = student WHERE student = ?" ;
         db.all(sql, [id], (err,rows) => {
             if(err)
                 reject(err);
             else{
                 if(rows.length){
-                    const courses = (rows[0].code !== null) ?
-                        rows.map(
-                            (row) =>
-                                new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatible,row.preparatory, row.enrolledStudents)
-                            )
-                        :null;
+                    let lastAdded;
+                    const courses = [];
+                    if(rows[0].code !== null){
+                        for(let row of rows){
+                            if(lastAdded !== row.code){
+                                lastAdded = row.code;
+                                courses.push(new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatibleCourse,row.preparatory, row.enrolledStudents))
+                                
+                            }else
+                                courses[courses.length - 1].incompatible.push(row.incompatibleCourse);                        
+                        }                        
+                    }
                     resolve(new StudyPlan(courses, id, rows[0].type, rows[0].totalCredits));  
                 }else
                     resolve(null);

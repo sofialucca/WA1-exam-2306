@@ -17,7 +17,7 @@ function App() {
   const [message, setMessage] = useState('');
   const [user,setUser] = useState(null);
   const [studyPlan, setStudyPlan] = useState(null);
-
+  const [coursesToUpdate, setCoursesUpdate] = useState([]);
   const getCourses = async() => {
     const courses = await API.getAllCourses();
     setCourses(courses);
@@ -29,16 +29,39 @@ function App() {
   }
 
   const deleteCourseStudyPlan = async(course) => {
-    setStudyPlan(oldStudyPlan => {
+    const limitations = (studyPlan.isDeletable(course.code));
 
-      return new StudyPlan(
-        oldStudyPlan.courses.filter(c => c.code !== course.code),
-        user.id,
-        oldStudyPlan.type,
-        oldStudyPlan.totalCredits-course.credits);
-    });
+    if(!limitations.length){
+      setCoursesUpdate(oldCourses =>
+        [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents-1)]  
+      )
+      setStudyPlan(oldStudyPlan => {
+
+        return new StudyPlan(
+          oldStudyPlan.courses.filter(c => c.code !== course.code),
+          user.id,
+          oldStudyPlan.type,
+          oldStudyPlan.totalCredits-course.credits);
+      });      
+    }
+
   }
 
+  //TODO check on max credits
+  const addCourseStudyPlan = async(course) => {
+    if(studyPlan.notAllowedCourses.every(c => c !== course.code) && !course.isFull() ){
+      setStudyPlan(oldStudyPlan => {
+        setCoursesUpdate(oldCourses =>
+          [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents+1)]  
+        )
+        return new StudyPlan(
+          [...oldStudyPlan.courses, course],
+          user.id,
+          oldStudyPlan.type,
+          oldStudyPlan.totalCredits+course.credits);
+      });       
+    }
+  }
   const cancelEditingStudyPlan = async() => {
     getStudyPlan(user.id);
     getCourses();
@@ -98,7 +121,7 @@ function App() {
       getStudyPlan(user.id);
       return true;
     }catch(err) {
-      //console.log(err);
+
       setMessage({msg: err, type: 'danger'});
       console.log(loggedIn);
       return false;
@@ -127,7 +150,7 @@ function App() {
         <Routes>
           <Route path='*' element={<DefaultRoute />} />      
           <Route path = '/login' element = {<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>/*loggedIn ? <Navigate replace to = '/studyplan'/>:*/ }/>
-          <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
+          <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan} addCourseStudyPlan = {addCourseStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
           <Route path = "/logout" element = {loggedIn ? <LogoutRoute user = {user} logout = {handleLogout} studyPlan = {studyPlan}/> :  <Navigate replace to = '/'/>}/>
 
           {/*<Route path="/studyplan" element = {<Navigate replace to = '/login'/> }/>*/}
