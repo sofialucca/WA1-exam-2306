@@ -35,6 +35,7 @@ function CourseRow(props) {
     const [expanded, setExpanded] = useState(false);
     const [deleteLimitations, setDeleteLimitations] = useState([]);
     const [addLimitations, setAddLimitations] = useState([]);
+    const [isEnabled, setEnabled] = useState(true);
     const showInfoCourse = () => {
         setExpanded(oldStatus => !oldStatus);
     }
@@ -54,22 +55,38 @@ function CourseRow(props) {
     }*/
     useEffect(() => {
       
-      if(props.studyPlan && props.studyPlan.isInPlan(props.course.code)){
+      if(props.studyPlan && props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isDeletable(props.course.code).length){
         setDeleteLimitations([...props.studyPlan.isDeletable(props.course.code)]);
+        setEnabled(false);
+      }
+      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isIncompatible(props.course.code).length){
+        setAddLimitations([...props.studyPlan.isIncompatible(props.course.code)]);
+        setEnabled(false);
       }
 
-      if(props.StudyPlan && !props.StudyPlan.isInPlan(props.course.code)){
-        console.log(props.studyPlan.isIncompatible("ciao" + props.course.code));  
-        setAddLimitations([...props.studyPlan.isIncompatible(props.course.code)]);
-        
-      }
+
+
+      
       
     },[props.studyPlan])
+
+    useEffect(() => {
+      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)){
+        setEnabled(false);
+      }
+    }, [props.studyPlan.totalCredits])
+
+    useEffect(() => {
+      if(props.course.isFull()){
+        setEnabled(false);
+      }
+
+    }, [props.course])
     
     return(
         <>
-            <tr className = {(expanded || deleteLimitations.length)? "":"row-separation"}>
-                <CourseAction isDeletable = {deleteLimitations.length} isAddable = {addLimitations.length} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
+            <tr className = {(expanded || !isEnabled)? "":"row-separation"}>
+                <CourseAction isDeletable = {deleteLimitations.length} isAddable = {addLimitations.length || props.course.isFull()} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
                 <CourseData course={props.course}/>
                 <td>
                   <Button variant = "outline-white" className = "button-course"  onClick = {showInfoCourse}>
@@ -89,6 +106,36 @@ function CourseRow(props) {
                     </ul>
                   </td>
                 </tr>):(<></>)
+              }
+              { 
+                (addLimitations.length) ?
+                (<tr className = {(expanded)? "":"row-separation"}>
+                  <td colSpan = "7">
+                    {props.course.name} is incompatible with: <br/>
+                    <ul>
+                      {addLimitations.map(c => <li key = {c.code}>{c.code} - {c.name}</li>)}
+                    </ul>
+                  </td>
+                </tr>):(<></>)
+              }
+              {
+                (props.course.isFull()) ?
+                (<tr className = {(expanded)? "":"row-separation"}>
+                  <td colSpan = "7">
+                    {props.course.name} is full
+                  </td>
+                </tr>):(<></>)                
+                
+              }
+
+              {
+                (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)) ?
+                (<tr className = {(expanded)? "":"row-separation"}>
+                  <td colSpan = "7">
+                    {props.course.name} has too many credits for this study plan
+                    <br/> Available credits for your studyplan: {props.studyPlan.availableCredits}
+                  </td>
+                </tr>):(<></>)                   
               }
             
             <tr className = {expanded? "row-separation":"d-none"}>

@@ -8,6 +8,7 @@ function StudyPlan(plan, id, type, totalCredits){
     this.notAllowedCourses = [];
     this.required = [];
     this.maxCredits = type == "full-time" ? 80:40;
+    this.availableCredits = this.maxCredits - this.totalCredits;
     if(plan) {
         plan.forEach(c => {
             if(c.incompatible)
@@ -21,7 +22,7 @@ function StudyPlan(plan, id, type, totalCredits){
         return this.courses.some(c => c.code === code)
     }
     this.isDeletable = (code) => {
-        return this.courses.filter (c => c.preparatory === code)
+        return this.courses.filter (c => c.preparatory && c.preparatory === code)
     }
 
     this.tooManyCredits = (course) => {
@@ -29,7 +30,7 @@ function StudyPlan(plan, id, type, totalCredits){
     }
 
     this.isIncompatible = (code) => {
-        return this.courses.filter(c =>c.incompatible.some(c => c === code))
+        return this.courses.filter(c =>c.incompatible && c.incompatible.some(c => c === code));
     }
     this.limitationCourse = (course) => {
         const limitations = {
