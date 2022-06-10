@@ -31,7 +31,12 @@ function LogoutRoute(props){
       </Row>
       <Row>
         <Col>
-          <StudyPlanInfos studyPlan = {props.studyPlan}/>
+          {props.studyPlan ?
+            <StudyPlanInfos studyPlan = {props.studyPlan}/>
+            :<>NO StudyPlan available</>
+          }
+
+          
           <LogoutButton logout = {props.logout}/>
         </Col>
       </Row>
