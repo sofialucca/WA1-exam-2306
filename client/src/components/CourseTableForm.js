@@ -64,20 +64,18 @@ function CourseRow(props) {
         setEnabled(false);
       }
 
-
+      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)){
+        setEnabled(false);
+      }
 
       
       
     },[props.studyPlan])
 
-    useEffect(() => {
-      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)){
-        setEnabled(false);
-      }
-    }, [props.studyPlan.totalCredits])
+
 
     useEffect(() => {
-      if(props.course.isFull()){
+      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()){
         setEnabled(false);
       }
 
@@ -86,7 +84,7 @@ function CourseRow(props) {
     return(
         <>
             <tr className = {(expanded || !isEnabled)? "":"row-separation"}>
-                <CourseAction isDeletable = {deleteLimitations.length} isAddable = {addLimitations.length || props.course.isFull()} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
+                <CourseAction isDeletable = {!isEnabled} isAddable = {!isEnabled} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
                 <CourseData course={props.course}/>
                 <td>
                   <Button variant = "outline-white" className = "button-course"  onClick = {showInfoCourse}>
@@ -119,7 +117,7 @@ function CourseRow(props) {
                 </tr>):(<></>)
               }
               {
-                (props.course.isFull()) ?
+                (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()) ?
                 (<tr className = {(expanded)? "":"row-separation"}>
                   <td colSpan = "7">
                     {props.course.name} is full
