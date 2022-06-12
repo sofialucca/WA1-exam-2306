@@ -95,6 +95,7 @@ function StudyPlanRoute(props){
                 deleteCourse = {props.deleteCourse} 
                 cancelEdit = {props.cancelEdit} 
                 deleteStudyPlan = {props.deleteStudyPlan}  
+                saveStudyPlan = {props.saveStudyPlan}
               /> :
               
               <StudyPlanCreator 

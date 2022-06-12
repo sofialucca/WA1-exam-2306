@@ -13,9 +13,9 @@ function LoginForm(props) {
       event.preventDefault();
       const credentials = { username, password };
       const result = props.login(credentials);
-      if(result){
+      /*if(props.loggedIn){
         navigate('/');
-      }
+      }*/
         
   };
 

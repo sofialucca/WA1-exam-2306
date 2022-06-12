@@ -23,7 +23,7 @@ function NavbarStudyPlan(props) {
                     (<Link to = '/login' className = "text-light">
                         <i className="bi bi-person-circle fs-2 not-logged-icon" role="img" alt="logo user" />
                     </Link>)
-                    :(<Link to = "/logout" className = "text-light">
+                    :(<Link to = "/logout" className = "text-light" onClick = {props.cancelEditingStudyPlan}>
                         <i className="bi bi-person-circle fs-2" role="img" alt="logo user" />
                     </Link> )              
                 }

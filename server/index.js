@@ -96,11 +96,39 @@ app.put('/api/courses/:code',
   }
 });
 
-//POST /api/studyplans/:id/:type
-app.post('/api/studyplans/:id/:type', isLoggedIn, (request, response) => {
+//PUT /api/studyplans/:id
+app.put('/api/studyplans/:id', isLoggedIn, (request, response) => {
 
-  studyPlanDao.createStudyPlan(request.params.id, request.params.type)
-  .then(data => response.status(201))
+  studyPlanDao.modifyStudyPlan(request.params.id, request.body.credits)
+  .then()
+  .then(async() => {
+    const arrayPromises = request.body.add.map(c =>
+      studyPlanDao.addCoursesStudyPlan(request.params.id, c)
+    )
+    await Promise.all(arrayPromises);
+  })
+  .then(async() =>{
+    const arrayPromises = request.body.remove.map(c =>
+      studyPlanDao.deleteCourseStudyPlan(request.params.id, c)
+    )
+    await Promise.all(arrayPromises);
+    return res.status(201).end();
+  })
+  .catch(() => response.status(503).end());
+})
+
+//POST /api/studyplans/:id
+app.post('/api/studyplans/:id', isLoggedIn, (request, response) => {
+
+  studyPlanDao.createStudyPlan(request.params.id, request.body.type, request.body.credits)
+  .then()
+  .then(async() => {
+    const arrayPromises = request.body.courses.map(c =>
+      studyPlanDao.addCoursesStudyPlan(request.params.id, c)
+    )
+    await Promise.all(arrayPromises);
+    return res.status(201).end();
+  })
   .catch(() => response.status(503).end());
 })
 

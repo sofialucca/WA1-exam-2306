@@ -114,10 +114,10 @@ exports.deleteAllCoursesStudyPlan = (id) => {
         });
     })    
 }
-exports.createStudyPlan = (id, type) => {
+exports.createStudyPlan = (id, type,credits) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO StudyPlan(student, type) VALUES (?, ?)';
-        db.run(sql, [id,type], function (err) {
+        const sql = 'INSERT INTO StudyPlan(student, type,totalCredits) VALUES (?, ?, ?)';
+        db.run(sql, [id,type,credits], function (err) {
           if (err) 
             reject(err);
           else 
@@ -126,10 +126,30 @@ exports.createStudyPlan = (id, type) => {
       });
 }
 
+exports.modifyStudyPlan = (id,credits) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE StudyPlan SET totalCredits=? WHERE students=?';
+        db.run(sql, [credits,id], function(err) {
+          if(err) reject(err);
+          else resolve(this.lastID);
+        });
+      });    
+}
+
+exports.addCoursesStudyPlan = (id,course) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO UserCourse(studentMatricola,courseCode) VALUES(?,?)';
+        db.run(sql, [id,course], (err) => {
+          if (err) reject(err);
+          else resolve(null);
+        });
+    })     
+}
+
 exports.deleteCourseStudyPlan = (id,code) => {
     return new Promise((resolve, reject) => {
-        const sql = 'DELETE FROM StudyPlan WHERE coursecode=? AND studentMatricola = ?';
-        db.run(sql, [code,id], (err) => {
+        const sql = 'DELETE FROM UserCourse WHERE studentMatricola = ? AND courseCode = ?';
+        db.run(sql, [id,code], (err) => {
           if (err) reject(err);
           else resolve(null);
         });

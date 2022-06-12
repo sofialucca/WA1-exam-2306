@@ -12,7 +12,7 @@ function StudyPlanForm(props){
       
       <Row>
         <Col>
-          <Button variant = "outline-success">
+          <Button variant = "outline-success" onClick = {() => props.saveStudyPlan()}>
             SAVE
           </Button>        
         </Col>

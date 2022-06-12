@@ -18,6 +18,9 @@ function App() {
   const [user,setUser] = useState(null);
   const [studyPlan, setStudyPlan] = useState(null);
   const [coursesToUpdate, setCoursesUpdate] = useState([]);
+  const [coursesToAdd, setCoursesToAdd] = useState([]);
+  const [coursesToRemove, setCoursesToRemove] = useState([]);
+  
   const getCourses = async() => {
     const courses = await API.getAllCourses();
     setCourses(courses);
@@ -33,13 +36,11 @@ function App() {
 
     if(!limitations.length){
       setCoursesUpdate(oldCourses =>{
-        console.log(course);
-        console.log(oldCourses);
-        console.log(oldCourses.length !== 0 && oldCourses.some(oc => oc.code === course.code))
         if(oldCourses.length !== 0 && oldCourses.some(oc => oc.code === course.code)){
-          console.log('already');
+          setCoursesToRemove((old)=>old.filter(oc => oc !== course.code));
           return oldCourses.filter(oc => oc.code !== course.code);
         }else{
+          setCoursesToRemove((old) => [...old,course.code]);
           return [new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents-1),...oldCourses ];  
         }
       })
@@ -52,22 +53,23 @@ function App() {
           oldStudyPlan.type,
           oldStudyPlan.totalCredits-course.credits);
       });     
-      console.log(coursesToUpdate); 
     }
 
   }
 
   //TODO check on max credits
-  const addCourseStudyPlan = (course) => {
+  const addCourseStudyPlan = async (course) => {
     if(studyPlan.notAllowedCourses.every(c => c !== course.code) && !course.isFull() ){
-      setCoursesUpdate(oldCourses =>{
-        console.log(oldCourses.some(oc => oc.code === course.code));
-        if(oldCourses.some(oc => oc.code === course.code))
-          return oldCourses.filter(oc => oc.code !== course.code)
-        else
-          return [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents+1)]  
+      setCoursesUpdate((oldCourses) =>{
+        if(oldCourses.length !== 0 && oldCourses.some(oc => oc.code === course.code)){
+          setCoursesToAdd((old)=>old.filter(oc => oc !== course.code))
+          return oldCourses.filter(oc => oc.code !== course.code);
+        }else{
+          setCoursesToAdd(old => [...old,course.code]);
+          return [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents+1)]
+        }
+            
       })
-      console.log(coursesToUpdate);     
       setStudyPlan(oldStudyPlan => {
 
         return new StudyPlan(
@@ -106,26 +108,34 @@ function App() {
   }
   const createStudyPlan = async(type) => {
     setStudyPlan(new StudyPlan(null,user.id,type,0));
-    await API.createStudyPlan(user.id,type);
     getStudyPlan(user.id);
   }
 
   const saveStudyPlan = async() => {
+    if(studyPlan && studyPlan.enoughCredits()){
+      setCourses(oldCourses => {
+        oldCourses.map(c => {
+          const newCourse = coursesToUpdate.filter(cu => cu.code === c.code);
+          if(newCourse.length !== 0)
+            return newCourse.pop()
+          else
+            return c
+        })
+      }) 
+      //const newStudyPlan = new StudyPlan(studyPlan.courses,user.id,studyPlan.type,studyPlan.totalCredits);
+      if(await API.getStudyPlan(user.id))
+        await API.modifyStudyPlan(studyPlan,coursesToAdd,coursesToRemove);
+      else
+        await API.createStudyPlan(studyPlan);
 
-    setCourses(oldCourses => {
-      oldCourses.map(c => {
-        const newCourse = coursesToUpdate.filter(cu => cu.code === c.code);
-        if(newCourse.length !== 0)
-          return newCourse.pop()
-        else
-          return c
-      })
-    }) 
-    
-    await API.modifyStudyPlan(studyPlan);
-    await API.modifyCourses(coursesToUpdate);
-    getStudyPlan(user.id);
-    getCourses();
+      await coursesToUpdate.forEach(async (c) => await API.modifyCourse(c));
+      getStudyPlan(user.id);
+      getCourses();
+      setCoursesToAdd([]);
+      setCoursesToRemove([]);
+      setCoursesUpdate([]);      
+    }
+
   }
   useEffect(() => {
     
@@ -156,12 +166,12 @@ function App() {
       setMessage('');
       setUser({...user});
       getStudyPlan(user.id);
-      return true;
+      //return true;
     }catch(err) {
 
       setMessage({msg: err, type: 'danger'});
       console.log(loggedIn);
-      return false;
+      //return false;
     }
   };
 //TODO check why doesn't work when i have message
@@ -179,15 +189,15 @@ function App() {
       <Container fluid className = 'App'>
 
         <Row className = "sticky-top">
-          <NavbarStudyPlan user = {user}/>
+          <NavbarStudyPlan user = {user} cancelEditingStudyPlan = {cancelEditingStudyPlan}/>
         </Row>
         {/*message && <Row>
           <Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert>
         </Row> */}        
         <Routes>
           <Route path='*' element={<DefaultRoute />} />      
-          <Route path = '/login' element = {<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>/*loggedIn ? <Navigate replace to = '/studyplan'/>:*/ }/>
-          <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan} addCourseStudyPlan = {addCourseStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
+          <Route path = '/login' element = {loggedIn ? <Navigate replace to = '/'/>:<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>}/>
+          <Route path='/' element = {loggedIn ? <StudyPlanRoute user = {user} studyPlan = {studyPlan} courses = {courses} deleteCourse = {deleteCourseStudyPlan} cancelEdit = {cancelEditingStudyPlan} deleteStudyPlan = {deleteStudyPlan} createStudyPlan = {createStudyPlan} addCourseStudyPlan = {addCourseStudyPlan} saveStudyPlan = {saveStudyPlan}/>:<CourseRoute courses = {courses}/>}/>
           <Route path = "/logout" element = {loggedIn ? <LogoutRoute user = {user} logout = {handleLogout} studyPlan = {studyPlan}/> :  <Navigate replace to = '/'/>}/>
 
           {/*<Route path="/studyplan" element = {<Navigate replace to = '/login'/> }/>*/}

@@ -83,8 +83,8 @@ function CourseRow(props) {
     
     return(
         <>
-            <tr className = {(expanded || !isEnabled)? "":"row-separation"}>
-                <CourseAction isDeletable = {!isEnabled} isAddable = {!isEnabled} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
+            <tr className = {(expanded || !isEnabled)? "":"row-separation"}  key={`course-${props.course.code}-infos`}>
+                <CourseAction isDisabled = {!isEnabled} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
                 <CourseData course={props.course}/>
                 <td>
                   <Button variant = "outline-white" className = "button-course"  onClick = {showInfoCourse}>
@@ -96,29 +96,27 @@ function CourseRow(props) {
 
               {
                 (deleteLimitations.length !== 0) ?
-                (<tr className = {(expanded)? "":"row-separation"}>
+                (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-delete-limitations`}>
                   <td colSpan = "7">
-                    {props.course.name} is preparatory for <br/>
-                    <ul>
-                      {deleteLimitations.map(c => <li key = {c.code}>{c.code} - {c.name}</li>)}
-                    </ul>
+                    {props.course.name} is preparatory for
+                      {deleteLimitations.map(c => <><br/>{c.code} - {c.name}</>)}
                   </td>
                 </tr>):(<></>)
               }
               { 
                 (addLimitations.length) ?
-                (<tr className = {(expanded)? "":"row-separation"}>
+                (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-add-limitations`}>
                   <td colSpan = "7">
-                    {props.course.name} is incompatible with: <br/>
-                    <ul>
-                      {addLimitations.map(c => <li key = {c.code}>{c.code} - {c.name}</li>)}
-                    </ul>
+                    {props.course.name} is incompatible with: 
+
+                      {addLimitations.map(c => <><br/>{c.code} - {c.name}</>)}
+
                   </td>
                 </tr>):(<></>)
               }
               {
                 (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()) ?
-                (<tr className = {(expanded)? "":"row-separation"}>
+                (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-full`}>
                   <td colSpan = "7">
                     {props.course.name} is full
                   </td>
@@ -128,7 +126,7 @@ function CourseRow(props) {
 
               {
                 (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)) ?
-                (<tr className = {(expanded)? "":"row-separation"}>
+                (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-no-space`}>
                   <td colSpan = "7">
                     {props.course.name} has too many credits for this study plan
                     <br/> Available credits for your studyplan: {props.studyPlan.availableCredits}
@@ -136,7 +134,7 @@ function CourseRow(props) {
                 </tr>):(<></>)                   
               }
             
-            <tr className = {expanded? "row-separation":"d-none"}>
+            <tr className = {expanded? "row-separation":"d-none"} key={`course-${props.course.code}-description`}>
                 <CourseDescription course={props.course} />   
             </tr>                   
         </>
@@ -150,12 +148,12 @@ function CourseAction(props){
         {
             (props.studyPlan && props.studyPlan.isInPlan(props.course.code)) ?
             <>
-                <Button disabled = {props.isDeletable} variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
+                <Button disabled = {props.isDisabled} variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
                     <i className='bi bi-trash3'></i>
                 </Button>                
             </>
             :<>
-                <Button disabled = {props.isAddable} variant='outline-success' onClick = {() => {props.addCourseStudyPlan(props.course)}} >
+                <Button disabled = {props.isDisabled} variant='outline-success' onClick = {() => {props.addCourseStudyPlan(props.course)}} >
                     <i className='bi bi-check-lg'></i>
                 </Button>                   
             </>

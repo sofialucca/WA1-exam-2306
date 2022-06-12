@@ -31,12 +31,11 @@ const logIn = async(credentials) => {
       credentials: 'include',
       body: JSON.stringify(credentials),
     });
-
+   // console.log(response);
     if(response.ok) {
       const user = await response.json();
       return user;
-    }
-    else {
+    }else {
       const errDetails = await response.text();
       throw errDetails;
     }
@@ -105,11 +104,22 @@ const deleteStudyPlan = async(plan) => {
 
 }
 
-const createStudyPlan = async(id, type) => {
-  const response = await fetch(SERVER_URL+ `/api/studyplans/${id}/${type}`,
+const createStudyPlan = async(studyPlan) => {
+  const response = await fetch(SERVER_URL+ `/api/studyplans/${studyPlan.userId}`,
     {
       method: 'POST',
       credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(
+        {
+          user: studyPlan.userId,
+          type: studyPlan.type,
+          credits: studyPlan.totalCredits,
+          courses: studyPlan.courses
+        }
+      ),
     });
   const message = await response.json();
   if(!response.ok){      
@@ -119,7 +129,7 @@ const createStudyPlan = async(id, type) => {
   }
 }
 
-const modifyStudyPlan = async(studyPlan) => {
+const modifyStudyPlan = async(studyPlan,add,remove) => {
   const response = await fetch(SERVER_URL + `/api/studyplans/${studyPlan.userId}`,
     {
         method: 'PUT',
@@ -129,7 +139,8 @@ const modifyStudyPlan = async(studyPlan) => {
             userId: studyPlan.userId,
             totalCredits:studyPlan.totalCredits,
             credits: studyPlan.credits,
-            courses: studyPlan.courses
+            add: add,
+            remove: remove
           }
         ),
         credentials: 'include'
@@ -174,5 +185,5 @@ const modifyCourse = async(course) => {
   }*/
 
 }
-const API = {getAllCourses,logIn,logOut, getUserInfo, getStudyPlan, deleteStudyPlan, modifyCourse,createStudyPlan};
+const API = {getAllCourses,logIn,logOut, getUserInfo, getStudyPlan, deleteStudyPlan, modifyCourse,createStudyPlan, modifyStudyPlan};
 export default API;

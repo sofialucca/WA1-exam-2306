@@ -12,11 +12,15 @@ function Course(code,name,credits, maxStudents, incompatible,preparatory, signed
     this.isFull = () => {
         return this.maxStudents === this.signedStudents ? true : false;
     }
-
+    /*
     this.addStudent = () => {
         this.signedStudents++;
     }
 
+    this.removeStudent = () => {
+        this.signedStudents--;
+    }
+    */
     this.printIncompatible = () => {
 
         if(!this.incompatible){
