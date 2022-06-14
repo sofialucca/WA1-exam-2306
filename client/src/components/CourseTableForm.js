@@ -35,6 +35,7 @@ function CourseRow(props) {
     const [expanded, setExpanded] = useState(false);
     const [deleteLimitations, setDeleteLimitations] = useState([]);
     const [addLimitations, setAddLimitations] = useState([]);
+    const [needPreparatory, setNeedPreparatory] = useState(false);
     const [isEnabled, setEnabled] = useState(true);
     const showInfoCourse = () => {
         setExpanded(oldStatus => !oldStatus);
@@ -53,24 +54,37 @@ function CourseRow(props) {
       )                     
 
     }*/
-    useEffect(() => {
-      
-      if(props.studyPlan && props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isDeletable(props.course.code).length){
-        setDeleteLimitations([...props.studyPlan.isDeletable(props.course.code)]);
-        setEnabled(false);
-      }
-      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isIncompatible(props.course.code).length){
-        setAddLimitations([...props.studyPlan.isIncompatible(props.course.code)]);
-        setEnabled(false);
-      }
 
-      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)){
-        setEnabled(false);
-      }
+      useEffect(() => {
+        
+        if(props.studyPlan && props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isDeletable(props.course.code).length){
+          //console.log(props.course);
+          //console.log(props.studyPlan.isDeletable(props.course.code));
+          setDeleteLimitations([...props.studyPlan.isDeletable(props.course.code)]);
+          setEnabled(false);
+        }
+        //check if preparatory in plan
+        if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code)){
+          if(props.course.preparatory && !props.studyPlan.isInPlan(props.course.preparatory)){
+            //console.log(props.course.preparatory);
+            setNeedPreparatory(true);
+            setEnabled(false);
+          }
 
-      
-      
-    },[props.studyPlan])
+        }
+        if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isIncompatible(props.course.code).length){
+          setAddLimitations([...props.studyPlan.isIncompatible(props.course.code)]);
+          setEnabled(false);
+        }
+
+        if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)){
+          setEnabled(false);
+        }
+
+        
+        
+      },[props.studyPlan, props.studyPlan.course])
+
 
 
 
@@ -83,18 +97,48 @@ function CourseRow(props) {
     
     return(
         <>
-            <tr className = {(expanded || !isEnabled)? "":"row-separation"}  key={`course-${props.course.code}-infos`}>
-                <CourseAction isDisabled = {!isEnabled} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
+            <tr className = {`${(expanded || !isEnabled)? "":"row-separation"}`}  key={`course-${props.course.code}-infos`}>
+                <CourseAction className = {!isEnabled? "bg-secondary" : ""} isDisabled = {!isEnabled} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
                 <CourseData course={props.course}/>
                 <td>
                   <Button variant = "outline-white" className = "button-course"  onClick = {showInfoCourse}>
                       <i className = {`bi bi-caret-${expanded ? 'up-fill' : 'down-fill' }`}/>
                   </Button>                    
                 </td>
-   
-            </tr>
+            </tr >
+{/*expanded? "": " row-separation"*/}
+              <tr className = {`border-3 border-warning ${!isEnabled? "":"d-none"} `}  key = {`course-${props.course.code}-limitations`}  >
+                  <td colSpan = "7">
+                  {(deleteLimitations.length !==0) ?
+                    <p>{props.course.name} is preparatory for 
+                      {deleteLimitations.map(c => <><br/>{c.code} - {c.name}</>)}</p>
+                    :<></>
+                  }
+                  {
+                    (addLimitations.length !== 0) ?
+                    <p>{props.course.name} is incompatible with: 
+                      {addLimitations.map(c => <><br/>{c.code} - {c.name}</>)}</p>
+                    :<></>                    
+                  }
+                  {
+                    (needPreparatory) ?
+                    <p>{props.course.name} needs in the study plan: {props.course.preparatory}</p>
+                    :<></>
+                  }
+                  {(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()) ?
+                    <p>{props.course.name} is full</p>
+                    :<></>                    
+                  }
+                  {
+                    (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)) ?
+                    <p>{props.course.name} has too many credits for this study plan\n
+                      Available credits for your studyplan: ${props.studyPlan.availableCredits}</p>
+                    :<></>
+                  }                  
 
-              {
+                  </td>
+              </tr>
+              {/*
                 (deleteLimitations.length !== 0) ?
                 (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-delete-limitations`}>
                   <td colSpan = "7">
@@ -115,6 +159,14 @@ function CourseRow(props) {
                 </tr>):(<></>)
               }
               {
+                (needPreparatory) ?
+                (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-preparatory-limitations`}>
+                  <td colSpan = "7">
+                    {props.course.name} needs in the study plan: {props.course.preparatory}
+                  </td>
+                </tr>):(<></>)                
+              }
+              {
                 (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()) ?
                 (<tr className = {(expanded)? "":"row-separation"} key={`course-${props.course.code}-full`}>
                   <td colSpan = "7">
@@ -133,6 +185,8 @@ function CourseRow(props) {
                   </td>
                 </tr>):(<></>)                   
               }
+              */}
+
             
             <tr className = {expanded? "row-separation":"d-none"} key={`course-${props.course.code}-description`}>
                 <CourseDescription course={props.course} />   

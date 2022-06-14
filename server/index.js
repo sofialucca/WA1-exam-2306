@@ -99,19 +99,27 @@ app.put('/api/courses/:code',
 //PUT /api/studyplans/:id
 app.put('/api/studyplans/:id', isLoggedIn, (request, response) => {
 
-  studyPlanDao.modifyStudyPlan(request.params.id, request.body.credits)
+  console.log('entered');
+  console.log(request.body);
+  studyPlanDao.modifyStudyPlan(request.params.id, request.body.totalCredits)
   .then()
   .then(async() => {
-    const arrayPromises = request.body.add.map(c =>
-      studyPlanDao.addCoursesStudyPlan(request.params.id, c)
+    /*const arrayPromises = request.body.add.map(c =>
+      studyPlanDao.addCourseStudyPlan(request.params.id, c)
     )
-    await Promise.all(arrayPromises);
+    await Promise.all(arrayPromises);    
+    */
+
+    request.body.add.forEach(async (c) => await studyPlanDao.addCourseStudyPlan(request.params.id, c));
+    console.log('worked');
   })
   .then(async() =>{
-    const arrayPromises = request.body.remove.map(c =>
+    /*const arrayPromises = request.body.remove.map(c =>
       studyPlanDao.deleteCourseStudyPlan(request.params.id, c)
     )
-    await Promise.all(arrayPromises);
+    await Promise.all(arrayPromises);*/
+    request.body.remove.forEach(async (c) => await  studyPlanDao.deleteCourseStudyPlan(request.params.id, c));
+
     return res.status(201).end();
   })
   .catch(() => response.status(503).end());

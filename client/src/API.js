@@ -145,6 +145,7 @@ const modifyStudyPlan = async(studyPlan,add,remove) => {
         ),
         credentials: 'include'
       });
+  console.log(response);
   if(!response.ok){
     const errMessage = await response.json();
     throw errMessage;        

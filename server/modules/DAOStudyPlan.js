@@ -128,7 +128,7 @@ exports.createStudyPlan = (id, type,credits) => {
 
 exports.modifyStudyPlan = (id,credits) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE StudyPlan SET totalCredits=? WHERE students=?';
+        const sql = 'UPDATE StudyPlan SET totalCredits=? WHERE student=?';
         db.run(sql, [credits,id], function(err) {
           if(err) reject(err);
           else resolve(this.lastID);
@@ -136,7 +136,7 @@ exports.modifyStudyPlan = (id,credits) => {
       });    
 }
 
-exports.addCoursesStudyPlan = (id,course) => {
+exports.addCourseStudyPlan = (id,course) => {
     return new Promise((resolve, reject) => {
         const sql = 'INSERT INTO UserCourse(studentMatricola,courseCode) VALUES(?,?)';
         db.run(sql, [id,course], (err) => {
@@ -155,7 +155,7 @@ exports.deleteCourseStudyPlan = (id,code) => {
         });
     })
 };
-
+/*
 exports.addCourseStudyPlan = (id,course,type) => {
     return new Promise((resolve, reject) => {
         const sql = "INSERT INTO StudyPlan(studentMatricola,courseCode,type) VALUES(?,?,?)";
@@ -166,5 +166,5 @@ exports.addCourseStudyPlan = (id,course,type) => {
                 resolve(this.lastId);
         });
     });
-}
+}*/
 
