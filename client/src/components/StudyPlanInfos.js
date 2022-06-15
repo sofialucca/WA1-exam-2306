@@ -45,7 +45,7 @@ function StudyPlanTable(props) {
           <tbody>
               {
               props.studyPlan.courses.map((c) => 
-                <CourseRow course={c} key={`course-${c.code}-studyplan`} />)
+                <CourseRowStudyPlan course={c} key={`course-${c.code}-studyplan`} />)
               }
   
           </tbody>
@@ -53,17 +53,17 @@ function StudyPlanTable(props) {
     );
   }
   
-  function CourseRow(props) {
+  function CourseRowStudyPlan(props) {
   
       return(
           <tr className = "row-separation">
-            <CourseData course={props.course}/> 
+            <CourseDataStudyPlan course={props.course}/> 
           </tr>
   
       );
   }
   
-  function CourseData(props) {
+  function CourseDataStudyPlan(props) {
     return(
       <>
         <td>{props.course.code}</td>

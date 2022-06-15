@@ -8,11 +8,16 @@ function Course(code,name,credits, maxStudents, incompatible,preparatory, signed
     this.incompatible = incompatible === null ? []:incompatible;
     this.preparatory = preparatory;
     this.signedStudents = signedStudents;
+    this.needToModify = false;
 
     this.isFull = () => {
         return this.maxStudents === this.signedStudents ? true : false;
     }
-    /*
+ /*
+    this.setModify = () => {
+        this.needToModify = !this.needToModify;
+    }
+   
     this.addStudent = () => {
         this.signedStudents++;
     }

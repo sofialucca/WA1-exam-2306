@@ -87,8 +87,8 @@ const getStudyPlan = async(id) => {
 }
 
 
-const deleteStudyPlan = async(plan) => {
-  const response = await fetch(SERVER_URL+ `/api/studyplans/${plan.userId}`,
+const deleteStudyPlan = async(userId) => {
+  const response = await fetch(SERVER_URL+ `/api/studyplans/${userId}`,
     {
       method: 'DELETE',
       credentials: 'include',
@@ -119,11 +119,10 @@ const createStudyPlan = async(studyPlan) => {
         }
       ),
     });
-  const message = await response.json();
-  if(!response.ok){      
-    throw message;    
-  }else{
-    return message;
+  
+  if(!response.ok){ 
+    const error = await response.json();     
+    throw  error;  
   }
 }
 const modifyStudyPlan = async(studyPlan) => {
@@ -183,7 +182,7 @@ const modifyCourse = async(course) => {
               credits: course.credits,
               maxStudents: course.maxStudents,
               preparatory: course.preparatory,
-              signedStudents: course.signedStudents,
+              signedStudents: course.signedStudents
             }
           ),
           credentials: 'include'

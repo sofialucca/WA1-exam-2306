@@ -31,22 +31,31 @@ function LoginForm(props) {
           <Form.Control type='password' value={password} onChange={ev => setPassword(ev.target.value)} required={true} minLength={6}/>
       </Form.Group>
 
-      <Button type="submit">Login</Button>
+      <Button type="submit">LOGIN</Button>
   </Form>
   )
 };
 
 function LogoutButton(props) {
-  const handleOnClick = (event) => {
-
-  }
   return(
     <Row>
       <Col>
-        <Button variant="outline-danger" onClick={props.logout}>Logout</Button>
+        <Button variant="outline-danger" onClick={props.logout}>
+          LOGOUT
+        </Button>
       </Col>
     </Row>
   )
 }
 
-export { LoginForm, LogoutButton };
+function LogoutIcon(props) {
+  return(
+
+        <Button className = "pb-3"variant = 'link' size = "sm">
+            <i className="bi bi bi-box-arrow-right text-white " role="img" alt="logo logout" onClick={props.logout}/>
+        </Button>
+
+  )
+}
+
+export { LoginForm, LogoutButton, LogoutIcon };

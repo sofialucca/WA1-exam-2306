@@ -35,8 +35,8 @@ function App() {
     const limitations = (studyPlan.isDeletable(course.code));
 
     if(!limitations.length){
-      setCoursesToAdd(oldCourses => oldCourses.filter(oc=> oc !== course.code));
-      setCoursesToRemove(oldCourses => [...oldCourses,course.code]);
+      /*setCoursesToAdd(oldCourses => oldCourses.filter(oc=> oc !== course.code));
+      setCoursesToRemove(oldCourses => [...oldCourses,course.code]);*/
       setCoursesUpdate(oldCourses => {
         if(oldCourses.every(oc => oc.code !== course.code))
           return [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents-1)];
@@ -68,8 +68,9 @@ function App() {
   //TODO check on max credits
   const addCourseStudyPlan = async (course) => {
     if(studyPlan.notAllowedCourses.every(c => c !== course.code) && !course.isFull() ){
-      setCoursesToRemove(oldCourses => oldCourses.filter(oc=> oc !== course.code));
-      setCoursesToAdd(oldCourses => [...oldCourses,course.code]);
+      /*setCoursesToRemove(oldCourses => oldCourses.filter(oc=> oc !== course.code));
+      setCoursesToAdd(oldCourses => [...oldCourses,course.code]);*/
+
       setCoursesUpdate(oldCourses => {
         if(oldCourses.every(oc => oc.code !== course.code))
           return [...oldCourses, new Course(course.code,course.name,course.credits,course.maxStudents,course.incompatible,course.preparatory,course.signedStudents+1)];
@@ -105,7 +106,8 @@ function App() {
   }
   //TODO save study plan
   const deleteStudyPlan = async() => {
-    studyPlan.courses.forEach((course) =>
+    const oldStudyPlan = await API.getStudyPlan(user.id);
+    oldStudyPlan.courses.forEach((course) =>
       {
         course.signedStudents--;
         setCourses( oldCourses => oldCourses.map(c => 
@@ -116,11 +118,12 @@ function App() {
       }  
     )
 
-    const plan = new StudyPlan(studyPlan.courses,studyPlan.userId,studyPlan.type,studyPlan.totalCredits);
+    //const plan = new StudyPlan(studyPlan.courses,studyPlan.userId,studyPlan.type,studyPlan.totalCredits);
+    
     setStudyPlan(null);
 
-    await plan.courses.forEach(async (c) => await API.modifyCourse(c));
-    await API.deleteStudyPlan(plan);
+    await oldStudyPlan.courses.forEach(async (c) => await API.modifyCourse(c));
+    await API.deleteStudyPlan(user.id);
     getStudyPlan(user.id);
     getCourses();
     setCoursesUpdate([]);
@@ -128,14 +131,20 @@ function App() {
   const createStudyPlan = async(type) => {
     setStudyPlan(new StudyPlan(null,user.id,type,0));
   }
-  //TODO modification of courses enrolled when saving
+  
   const saveStudyPlan = async() => {
-    if(studyPlan && studyPlan.enoughCredits()){
+    if(studyPlan && studyPlan.neededCredits() >= 0){
 
-      setCourses(oldCourses => {
-            return [...coursesToUpdate, ...oldCourses.filter(c => {return coursesToUpdate.every(cu => c.code !== cu.code)})]          
-        }) 
-      
+      setCourses(oldCourses => 
+            oldCourses.map(c => {
+              const newCourse = coursesToUpdate.filter(cu => c.code === cu.code);
+              if(newCourse.length !== 0){
+                console.log(newCourse[0]);
+                return newCourse[0];
+              }else
+                return c
+            })
+        ) 
       //const newStudyPlan = new StudyPlan(studyPlan.courses,user.id,studyPlan.type,studyPlan.totalCredits);
       if(await API.getStudyPlan(user.id)){
         await API.modifyStudyPlan(studyPlan);
@@ -150,9 +159,12 @@ function App() {
       setCoursesToAdd([]);
       setCoursesToRemove([]);
       setCoursesUpdate([]);      
+    }else{
+      setMessage({msg: `Not enough credits.\nNeed at least : ${-studyPlan.neededCredits()} more`, type: 'warning'});
     }
 
   }
+  
   useEffect(() => {
     
     const checkAuth = async () => {
@@ -167,10 +179,10 @@ function App() {
     };
     setMessage('');
     checkAuth();
-    
+     setCoursesUpdate([]);
     getCourses();
     
-    setCoursesUpdate([]);
+   
   }, []);
 
 
@@ -179,7 +191,7 @@ function App() {
       
       const user = await API.logIn(credentials);
       setLoggedIn(true);
-      setMessage('');
+      setMessage({msg: `Successfull login`, type: 'success'});
       setUser({...user});
       getStudyPlan(user.id);
       //return true;
@@ -197,6 +209,7 @@ function App() {
     setMessage({msg: `Successfull logout`, type: 'success'});
     setUser(null);
     setStudyPlan(null);
+    setCoursesUpdate([]);
   };
 
   return (
@@ -205,11 +218,11 @@ function App() {
       <Container fluid className = 'App'>
 
         <Row className = "sticky-top">
-          <NavbarStudyPlan user = {user} cancelEditingStudyPlan = {cancelEditingStudyPlan}/>
+          <NavbarStudyPlan user = {user} cancelEditingStudyPlan = {cancelEditingStudyPlan} logout = {handleLogout}/>
         </Row>
-        {/*message && <Row>
+        {message && <Row>
           <Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert>
-        </Row> */}        
+        </Row>}       
         <Routes>
           <Route path='*' element={<DefaultRoute />} />      
           <Route path = '/login' element = {loggedIn ? <Navigate replace to = '/'/>:<LoginRoute login = {handleLogin} loggedIn = {loggedIn}/>}/>

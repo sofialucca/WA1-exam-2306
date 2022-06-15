@@ -7,7 +7,8 @@ function StudyPlan(plan, id, type, totalCredits){
     this.totalCredits = totalCredits;
     this.notAllowedCourses = [];
     this.required = [];
-    this.maxCredits = type == "full-time" ? 80:40;
+    this.maxCredits = type === "full-time" ? 80:40;
+    this.minCredits = type === "full-time" ? 60:20;
 
     this.availableCredits = this.maxCredits - this.totalCredits;
     if(plan) {
@@ -19,9 +20,9 @@ function StudyPlan(plan, id, type, totalCredits){
         })
     }
 
-    this.enoughCredits = ()=>{
-        const needCredits = type == "full-time" ? (this.totalCredits - 60) : (this.totalCredits -20);
-        return needCredits >= 0
+    this.neededCredits = ()=>{
+    
+        return this.totalCredits -this.minCredits
     }
     this.isInPlan = (code)=>{
         return this.courses.some(c => c.code === code)
