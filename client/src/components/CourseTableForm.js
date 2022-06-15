@@ -90,18 +90,18 @@ function CourseRow(props) {
     
     return(
         <>
-            <tr className = {`${(expanded || !isEnabled)? "":"row-separation"}`}  key={`course-${props.course.code}-infos`}>
+            <tr className = {`${(expanded || !isEnabled)? "":"row-separation"}`} key={`course-${props.course.code}-infos`} >
                 <CourseAction className = {!isEnabled? "bg-secondary" : ""} isDisabled = {!isEnabled} course = {props.course} studyPlan = {props.studyPlan} deleteCourse = {props.deleteCourse} addCourseStudyPlan = {props.addCourseStudyPlan}/>
                 <CourseData course={props.course}/>
-                <td>
+                <td colSpan={7}>
                   <Button variant = "outline-white" className = "button-course"  onClick = {showInfoCourse}>
                       <i className = {`bi bi-caret-${expanded ? 'up-fill' : 'down-fill' }`}/>
                   </Button>                    
                 </td>
-            </tr >
+            </tr>
 {/*expanded? "": " row-separation"*/}
-              <tr className = {`border-3 border-warning ${!isEnabled? "":"d-none"} `}  key = {`course-${props.course.code}-limitations`}  >
-                  <td colSpan = "7">
+              <tr className = {`border-3 border-warning ${!isEnabled? "":"d-none"} `} key={`course-${props.course.code}-limitations`}   >
+                  <td colSpan = {7}>
                   {(deleteLimitations.length !==0) ?
                     <p>{props.course.name} is preparatory for 
                       {deleteLimitations.map(c => <><br/>{c.code} - {c.name}</>)}</p>
@@ -177,8 +177,8 @@ function CourseRow(props) {
                     <br/> Available credits for your studyplan: {props.studyPlan.availableCredits}
                   </td>
                 </tr>):(<></>)                   
-              }
-              */}
+              }*/}
+              
 
             
             <tr className = {expanded? "row-separation":"d-none"} key={`course-${props.course.code}-description`}>
@@ -189,22 +189,21 @@ function CourseRow(props) {
     );
 }
 function CourseAction(props){
-    //console.log(props.studyPlan);
     return(
-      <td >
-        {
-            (props.studyPlan && props.studyPlan.isInPlan(props.course.code)) ?
+      <td>
+        {/*
+            (props.studyPlan && props.studyPlan.isInPlan(props.course.code)) ?*/}
             <>
-                <Button disabled = {props.isDisabled} variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
+                <Button className = {props.studyPlan.isInPlan(props.course.code)? "":"d-none"} disabled = {props.isDisabled} variant='outline-danger' onClick={() => {props.deleteCourse(props.course)}}>
                     <i className='bi bi-trash3'></i>
                 </Button>                
             </>
-            :<>
-                <Button disabled = {props.isDisabled} variant='outline-success' onClick = {() => {props.addCourseStudyPlan(props.course)}} >
+            <>
+                <Button className = {!props.studyPlan.isInPlan(props.course.code)? "":"d-none"} disabled = {props.isDisabled} variant='outline-success' onClick = {() => {props.addCourseStudyPlan(props.course)}} >
                     <i className='bi bi-check-lg'></i>
                 </Button>                   
             </>
-        }
+        
 
       </td>
     )  

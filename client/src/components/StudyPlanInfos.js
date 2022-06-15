@@ -45,7 +45,7 @@ function StudyPlanTable(props) {
           <tbody>
               {
               props.studyPlan.courses.map((c) => 
-                <CourseRow course={c} key={`course-${c.code}`} />)
+                <CourseRow course={c} key={`course-${c.code}-studyplan`} />)
               }
   
           </tbody>

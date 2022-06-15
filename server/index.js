@@ -81,7 +81,7 @@ app.put('/api/courses/:code',
   const errors = validationResult(req);
   if(!errors.isEmpty())
     return res.status(422).json({errors: errors.array()});
-  console.log('ENTERED');
+
   const courseToUpdate = req.body;
   if(req.params.code === courseToUpdate.code) {
     try {

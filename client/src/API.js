@@ -85,9 +85,7 @@ const getStudyPlan = async(id) => {
     }
 
 }
-const updateStudyPlan = async(studyPlan) => {
 
-}
 
 const deleteStudyPlan = async(plan) => {
   const response = await fetch(SERVER_URL+ `/api/studyplans/${plan.userId}`,
@@ -143,7 +141,7 @@ const modifyStudyPlan = async(studyPlan) => {
         ),
         credentials: 'include'
       });
-  console.log(response);
+
   if(!response.ok){
     const errMessage = await response.json();
     throw errMessage;        
