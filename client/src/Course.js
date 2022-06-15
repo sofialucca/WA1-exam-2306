@@ -8,27 +8,13 @@ function Course(code,name,credits, maxStudents, incompatible,preparatory, signed
     this.incompatible = incompatible === null ? []:incompatible;
     this.preparatory = preparatory;
     this.signedStudents = signedStudents;
-    this.needToModify = false;
 
     this.isFull = () => {
         return this.maxStudents === this.signedStudents ? true : false;
     }
- /*
-    this.setModify = () => {
-        this.needToModify = !this.needToModify;
-    }
-   
-    this.addStudent = () => {
-        this.signedStudents++;
-    }
-
-    this.removeStudent = () => {
-        this.signedStudents--;
-    }
-    */
     this.printIncompatible = () => {
 
-        if(!this.incompatible){
+        if(!this.incompatible.length){
             return `${this.name} doesn't have any incompatible course`
         }
         let stringReturn = `Incompatible course`;

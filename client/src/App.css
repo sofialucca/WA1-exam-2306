@@ -2,7 +2,7 @@
   text-align: center;
 }
 
-h1,th, .title-nav{
+h1,th, .title-nav,h2{
   font-variant: small-caps;
 }
 .title-nav{
@@ -17,6 +17,14 @@ h1{
   font-size: 3rem;
 
 }
+
+.sub-title{
+  color:rgb(84, 0, 162);
+  font-weight: bold;  
+  font-size: 2.25rem;
+}
+
+
 .NavBar{
   background-color: rgb(124, 50, 193);
   margin-bottom: 2rem;
@@ -54,6 +62,18 @@ h1{
   border-bottom: 0.15rem solid rgba(151, 98, 200, 0.686);
 }
 
+.btn-purple{
+  color:rgb(124, 50, 193);
+  border: solid 1px rgb(124, 50, 193);
+}
+
+.btn-purple:active,
+.btn-purple:visited,
+.btn-purple:focus,
+.btn-purple:hover{
+  color:white;
+  background-color: rgb(124, 50, 193);
+}
 td,th{
   vertical-align:middle;
 }
@@ -65,4 +85,8 @@ td,th{
 
 .not-logged-icon{
   opacity: 50%;
+}
+
+.form-check-type{
+  padding: -7rem 0;
 }

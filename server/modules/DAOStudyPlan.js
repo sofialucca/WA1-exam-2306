@@ -42,8 +42,10 @@ exports.listCourses = () => {
                             lastAdded = row.code;
                             courses.push(new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatibleCourse,row.preparatory, row.enrolledStudents))
                             
-                        }else
-                            courses[courses.length - 1].incompatible.push(row.incompatibleCourse);                        
+                        }else{
+                            courses[courses.length - 1].incompatible.push(row.incompatibleCourse); 
+                        }
+                                                   
                     }
 
                     resolve(courses);
@@ -157,16 +159,4 @@ exports.deleteCourseStudyPlan = (id,code) => {
         });
     })
 };
-/*
-exports.addCourseStudyPlan = (id,course,type) => {
-    return new Promise((resolve, reject) => {
-        const sql = "INSERT INTO StudyPlan(studentMatricola,courseCode,type) VALUES(?,?,?)";
-        db.run(sql, [id,course,type],(err) =>{
-            if(err)
-                reject(err);
-            else
-                resolve(this.lastId);
-        });
-    });
-}
-*/
+
