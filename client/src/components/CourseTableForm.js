@@ -17,6 +17,7 @@ function CourseTableForm(props) {
         </thead>
         <tbody>
           {
+            props.courses ?
             props.courses.map((c) => 
               <CourseRow 
               deleteCourse = {props.deleteCourse} 
@@ -24,6 +25,7 @@ function CourseTableForm(props) {
               studyPlan = {props.studyPlan} 
               course={c} 
               key={`course-${c.code}`}/>)
+            :<></>
           }
         </tbody>
       </Table>
@@ -56,17 +58,14 @@ function CourseRow(props) {
     }*/
 
       useEffect(() => {
-        
+        setEnabled(true);
         if(props.studyPlan && props.studyPlan.isInPlan(props.course.code) && props.studyPlan.isDeletable(props.course.code).length){
-          //console.log(props.course);
-          //console.log(props.studyPlan.isDeletable(props.course.code));
           setDeleteLimitations([...props.studyPlan.isDeletable(props.course.code)]);
           setEnabled(false);
         }
         //check if preparatory in plan
         if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code)){
           if(props.course.preparatory && !props.studyPlan.isInPlan(props.course.preparatory)){
-            //console.log(props.course.preparatory);
             setNeedPreparatory(true);
             setEnabled(false);
           }
@@ -80,20 +79,14 @@ function CourseRow(props) {
         if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)){
           setEnabled(false);
         }
-
+        if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()){
+          setEnabled(false);
+        }
         
         
-      },[props.studyPlan, props.studyPlan.course])
+      },[props.studyPlan.courses])
 
 
-
-
-    useEffect(() => {
-      if(props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.course.isFull()){
-        setEnabled(false);
-      }
-
-    }, [props.course])
     
     return(
         <>
@@ -131,8 +124,8 @@ function CourseRow(props) {
                   }
                   {
                     (props.studyPlan && !props.studyPlan.isInPlan(props.course.code) && props.studyPlan.tooManyCredits(props.course)) ?
-                    <p>{props.course.name} has too many credits for this study plan\n
-                      Available credits for your studyplan: ${props.studyPlan.availableCredits}</p>
+                    <p>{props.course.name} has too many credits for this study plan<br/>
+                      Available credits for your studyplan: {props.studyPlan.availableCredits}</p>
                     :<></>
                   }                  
 

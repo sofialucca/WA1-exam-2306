@@ -18,7 +18,7 @@ const port = 3001;
 
 // set up the middlewares
 app.use(morgan('dev'));
-app.use(express.json()); // for parsing json request body
+app.use(express.json()); // for parsing json req body
 // set uo and enable cors
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -61,13 +61,15 @@ app.use(passport.authenticate('session'));
 /*** APIs ***/
 
 // GET /api/courses
-app.get('/api/courses',  (request, response) => {
+app.get('/api/courses',  (req, res) => {
 
   studyPlanDao.listCourses()
     .then((courses) =>{
-      return response.json(courses).status(200)      
+      return res
+  .json(courses).status(200)      
     })
-    .catch(() => response.status(500).end());
+    .catch(() => res
+.status(500).end());
   });
 
 //PUT /api/courses/:code
@@ -92,52 +94,56 @@ app.put('/api/courses/:code',
     }
   }
   else {
-    res.status(503).json({error: `Wrong exam code in the request body.`});
+    res.status(503).json({error: `Wrong exam code in the req body.`});
   }
 });
 
 //PUT /api/studyplans/:id
-app.put('/api/studyplans/:id', isLoggedIn, (request, response) => {
+app.put('/api/studyplans/:id', isLoggedIn, (req, res) => {
 
-  console.log('entered');
-  console.log(request.body);
-  studyPlanDao.modifyStudyPlan(request.params.id, request.body.totalCredits)
+ // console.log('entered');
+ // console.log(req.body);
+  studyPlanDao.modifyStudyPlan(req.params.id, req.body.totalCredits)
   .then()
   .then(async() => {
-    /*const arrayPromises = request.body.add.map(c =>
-      studyPlanDao.addCourseStudyPlan(request.params.id, c)
+    /*const arrayPromises = req.body.add.map(c =>
+      studyPlanDao.addCourseStudyPlan(req.params.id, c)
     )
-    await Promise.all(arrayPromises);    
+    await Promise.all(arrayPromises);
+    req.body.add.forEach(async (c) => await studyPlanDao.addCourseStudyPlan(req.params.id, c));    
     */
-
-    request.body.add.forEach(async (c) => await studyPlanDao.addCourseStudyPlan(request.params.id, c));
-    console.log('worked');
+    await studyPlanDao.deleteAllCoursesStudyPlan(req.params.id);
+    
+    
   })
   .then(async() =>{
-    /*const arrayPromises = request.body.remove.map(c =>
-      studyPlanDao.deleteCourseStudyPlan(request.params.id, c)
+    /*const arrayPromises = req.body.remove.map(c =>
+      studyPlanDao.deleteCourseStudyPlan(req.params.id, c)
     )
     await Promise.all(arrayPromises);*/
-    request.body.remove.forEach(async (c) => await  studyPlanDao.deleteCourseStudyPlan(request.params.id, c));
-
+    //console.log(req.body.courses);
+    await req.body.courses.forEach(async (c) => await  studyPlanDao.addCourseStudyPlan(req.params.id, c.code));
+    console.log('worked add');
     return res.status(201).end();
   })
-  .catch(() => response.status(503).end());
+  .catch((err) => {console.log(err); res
+.status(503).end()});
 })
 
 //POST /api/studyplans/:id
-app.post('/api/studyplans/:id', isLoggedIn, (request, response) => {
+app.post('/api/studyplans/:id', isLoggedIn, (req, res) => {
 
-  studyPlanDao.createStudyPlan(request.params.id, request.body.type, request.body.credits)
+  studyPlanDao.createStudyPlan(req.params.id, req.body.type, req.body.credits)
   .then()
   .then(async() => {
-    const arrayPromises = request.body.courses.map(c =>
-      studyPlanDao.addCoursesStudyPlan(request.params.id, c)
+    /*const arrayPromises = req.body.courses.map(c =>
+      studyPlanDao.addCoursesStudyPlan(req.params.id, c)
     )
-    await Promise.all(arrayPromises);
+    await Promise.all(arrayPromises);*/
+    await req.body.courses.forEach(async (c) => await  studyPlanDao.addCourseStudyPlan(req.params.id, c.code));
     return res.status(201).end();
   })
-  .catch(() => response.status(503).end());
+  .catch((err) => res.status(503).end());
 })
 
 // GET /api/studyplans/:id
@@ -145,22 +151,24 @@ app.get('/api/studyplans/:id',
 [
   isLoggedIn,
   check('code').isLength({min:7, max:7}) 
-], (request, response) => {
+], (req, res) => {
 
-  studyPlanDao.getStudyPlan(request.params.id)
-  .then(studyPlan => response.json(studyPlan).status(200))
-  .catch(() => response.status(500).end());
+  studyPlanDao.getStudyPlan(req.params.id)
+  .then(studyPlan => res
+.json(studyPlan).status(200))
+  .catch(() => res.status(500).end());
 })
 
 // DELETE /api/studyplans/:id
-app.delete('/api/studyplans/:id', isLoggedIn, (request, response) => {
+app.delete('/api/studyplans/:id', isLoggedIn, (req, res) => {
 
-  studyPlanDao.deleteStudyPlan(request.params.id)
+  studyPlanDao.deleteStudyPlan(req.params.id)
   .then(data => {
-    studyPlanDao.deleteAllCoursesStudyPlan(request.params.id)
-    .then(data => response.status(204))
+    studyPlanDao.deleteAllCoursesStudyPlan(req.params.id)
+    .then(data => res
+  .status(204))
   })
-  .catch(() => response.status(503).end());
+  .catch(() => res.status(503).end());
 })
 
 

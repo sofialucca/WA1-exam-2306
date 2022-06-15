@@ -128,7 +128,28 @@ const createStudyPlan = async(studyPlan) => {
     return message;
   }
 }
-
+const modifyStudyPlan = async(studyPlan) => {
+  const response = await fetch(SERVER_URL + `/api/studyplans/${studyPlan.userId}`,
+    {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(
+          {
+            userId: studyPlan.userId,
+            totalCredits:studyPlan.totalCredits,
+            credits: studyPlan.credits,
+            courses: studyPlan.courses
+          }
+        ),
+        credentials: 'include'
+      });
+  console.log(response);
+  if(!response.ok){
+    const errMessage = await response.json();
+    throw errMessage;        
+  }
+}
+/*
 const modifyStudyPlan = async(studyPlan,add,remove) => {
   const response = await fetch(SERVER_URL + `/api/studyplans/${studyPlan.userId}`,
     {
@@ -150,10 +171,9 @@ const modifyStudyPlan = async(studyPlan,add,remove) => {
     const errMessage = await response.json();
     throw errMessage;        
   }
-}
+}*/
 
 const modifyCourse = async(course) => {
-  console.log(course);
   const response = await fetch(SERVER_URL + `/api/courses/${course.code}`,
       {
           method: 'PUT',
@@ -173,8 +193,6 @@ const modifyCourse = async(course) => {
   if(!response.ok){
       const errMessage = await response.json();
       throw errMessage;        
-  }else{
-      console.log(response);
   }
   /*  
   if(response.ok) {

@@ -113,12 +113,15 @@ function StudyPlanRoute(props){
         </Row>
         <Row>
           <Col>
+          {props.studyPlan ? 
             <CourseTableForm 
               courses={props.courses} 
               studyPlan = {props.studyPlan} 
               deleteCourse = {props.deleteCourse}
               addCourseStudyPlan = {props.addCourseStudyPlan}
-            />
+            />:
+            <CourseTable courses={props.courses} />
+          }
           </Col>
         </Row>
 

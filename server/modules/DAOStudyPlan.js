@@ -38,7 +38,7 @@ exports.listCourses = () => {
                 if(rows.length){
                     const courses = [];
                     for(let row of rows){
-                        if(lastAdded !== row.code){
+                        if(lastAdded !== row.code || courses.length == 0){
                             lastAdded = row.code;
                             courses.push(new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatibleCourse,row.preparatory, row.enrolledStudents))
                             
@@ -78,12 +78,14 @@ exports.getStudyPlan = (id) => {
                     const courses = [];
                     if(rows[0].code !== null){
                         for(let row of rows){
-                            if(lastAdded !== row.code){
+                            if(lastAdded !== row.code ){
                                 lastAdded = row.code;
                                 courses.push(new Course(row.code,row.name,row.credits,row.maxStudents,row.incompatibleCourse,row.preparatory, row.enrolledStudents))
                                 
-                            }else
-                                courses[courses.length - 1].incompatible.push(row.incompatibleCourse);                        
+                            }else{
+                                courses[courses.length - 1].incompatible.push(row.incompatibleCourse);
+                            }
+                                                        
                         }                        
                     }
                     resolve(new StudyPlan(courses, id, rows[0].type, rows[0].totalCredits));  
@@ -166,5 +168,5 @@ exports.addCourseStudyPlan = (id,course,type) => {
                 resolve(this.lastId);
         });
     });
-}*/
-
+}
+*/
