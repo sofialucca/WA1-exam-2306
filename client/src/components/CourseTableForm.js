@@ -99,6 +99,7 @@ function CourseRow(props) {
 
   return (
     <>
+
       <tr
         className={`${expanded || !isEnabled ? "" : "row-separation"}`}
         key={`course-${props.course.code}-infos`}
@@ -112,7 +113,7 @@ function CourseRow(props) {
           addCourseStudyPlan={props.addCourseStudyPlan}
         />
         <CourseData course={props.course} />
-        <td colSpan={7}>
+        <td>
           <Button
             variant="outline-white"
             className="button-course"
@@ -121,9 +122,11 @@ function CourseRow(props) {
             <i
               className={`bi bi-caret-${expanded ? "up-fill" : "down-fill"}`}
             />
-          </Button>
+          </Button>          
         </td>
+
       </tr>
+
       <tr
         className={`border-3 border-warning ${!isEnabled ? "" : "d-none"} `}
         key={`course-${props.course.code}-limitations`}
@@ -183,7 +186,9 @@ function CourseRow(props) {
             <></>
           )}
         </td>
-      </tr>
+      </tr> 
+     
+
       <tr
         className={expanded ? "row-separation" : "d-none"}
         key={`course-${props.course.code}-description`}
@@ -196,13 +201,10 @@ function CourseRow(props) {
 function CourseAction(props) {
   return (
     <td>
-      {/*
-            (props.studyPlan && props.studyPlan.isInPlan(props.course.code)) ?*/}
+
+      {      (props.studyPlan && props.studyPlan.isInPlan(props.course.code)) ?
       <>
         <Button
-          className={
-            props.studyPlan.isInPlan(props.course.code) ? "" : "d-none"
-          }
           disabled={props.isDisabled}
           variant="outline-danger"
           onClick={() => {
@@ -212,11 +214,8 @@ function CourseAction(props) {
           <i className="bi bi-trash3"></i>
         </Button>
       </>
-      <>
+      :<>
         <Button
-          className={
-            !props.studyPlan.isInPlan(props.course.code) ? "" : "d-none"
-          }
           disabled={props.isDisabled}
           variant="outline-success"
           onClick={() => {
@@ -225,7 +224,7 @@ function CourseAction(props) {
         >
           <i className="bi bi-check-lg"></i>
         </Button>
-      </>
+      </>}
     </td>
   );
 }

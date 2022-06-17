@@ -1,6 +1,6 @@
 'use strict';
 
-function Course(code,name,credits, maxStudents, incompatible,preparatory, signedStudents){
+function Course(code,name,credits, maxStudents, incompatible,preparatory, signedStudents, newSignedStudents){
     this.code = code;
     this.name = name;
     this.credits = credits;
@@ -8,10 +8,13 @@ function Course(code,name,credits, maxStudents, incompatible,preparatory, signed
     this.incompatible = incompatible === null ? []:incompatible;
     this.preparatory = preparatory;
     this.signedStudents = signedStudents;
+    this.newSignedStudents = (newSignedStudents !== undefined) ? newSignedStudents : signedStudents ;
 
     this.isFull = () => {
         return this.maxStudents === this.signedStudents ? true : false;
     }
+
+
     this.printIncompatible = () => {
 
         if(!this.incompatible.length){

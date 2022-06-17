@@ -62,6 +62,24 @@ function App() {
       else return oldCourses.filter((oc) => oc.code !== course.code);
     });
 
+    setCourses ((oldCourses) =>
+      oldCourses.map(oc =>{ 
+        if(oc.code === course.code){
+          return new Course( 
+            oc.code,                 
+            oc.name,
+            oc.credits,
+            oc.maxStudents,
+            oc.incompatible,
+            oc.preparatory,
+            oc.signedStudents,
+            oc.newSignedStudents-1);          
+        }
+
+        return oc
+      }
+      ))
+
     setStudyPlan((oldStudyPlan) => {
       return new StudyPlan(
         oldStudyPlan.courses.filter((c) => c.code !== course.code),
@@ -89,6 +107,23 @@ function App() {
           ];
         else return oldCourses.filter((oc) => oc.code !== course.code);
       });
+      setCourses ((oldCourses) =>
+      oldCourses.map(oc =>{ 
+        if(oc.code === course.code){
+          return new Course(
+            oc.code,                  
+            oc.name,
+            oc.credits,
+            oc.maxStudents,
+            oc.incompatible,
+            oc.preparatory,
+            oc.signedStudents,
+            oc.newSignedStudents+1);
+        }
+        
+        return oc
+      }
+      ))
       setStudyPlan((oldStudyPlan) => {
         return new StudyPlan(
           [...oldStudyPlan.courses, course],
@@ -108,33 +143,38 @@ function App() {
   const deleteStudyPlan = async () => {
     try{
       const oldStudyPlan = await API.getStudyPlan(user.id);
-      oldStudyPlan.courses.forEach((course) => {
-        course.signedStudents--;
-        setCourses((oldCourses) =>
-          oldCourses.map((c) =>
-            c.code === course.code
-              ? new Course(
-                  c.code,
-                  c.name,
-                  c.credits,
-                  c.maxStudents,
-                  c.incompatible,
-                  c.preparatory,
-                  c.signedStudents - 1
-                )
-              : c
-          )
-        );
-      });
+      if(oldStudyPlan != null){
+        oldStudyPlan.courses.forEach((course) => {
+          course.signedStudents--;
+          setCourses((oldCourses) =>
+            oldCourses.map((c) =>
+              c.code === course.code
+                ? new Course(
+                    c.code,
+                    c.name,
+                    c.credits,
+                    c.maxStudents,
+                    c.incompatible,
+                    c.preparatory,
+                    c.signedStudents - 1
+                  )
+                : c
+            )
+          );
+        });
 
-      setStudyPlan(null);
+        setStudyPlan(null);
 
-      await oldStudyPlan.courses.forEach(async (c) => await API.modifyCourse(c));
-      await API.deleteStudyPlan(user.id);
-      getStudyPlan(user.id);
-      getCourses();
-      setCoursesUpdate([]);
-      setMessage({ msg: `Successfull deletion of study plan`, type: "success" })      ;
+        await oldStudyPlan.courses.forEach(async (c) => await API.modifyCourse(c));
+        await API.deleteStudyPlan(user.id);
+        setMessage({ msg: `Successfull deletion of study plan`, type: "success" });
+        getStudyPlan(user.id);
+        getCourses();
+        setCoursesUpdate([]);              
+      }else{
+        cancelEditingStudyPlan();
+      }
+      
     }catch(err){
       setMessage({ msg: err, type: "danger" })      ;
     }
@@ -148,15 +188,19 @@ function App() {
   const saveStudyPlan = async () => {
     if (studyPlan && studyPlan.neededCredits() >= 0) {
       try{
+        if(coursesToUpdate.length == 0){
+          return;
+        }
         let msg;
-        setCourses((oldCourses) =>
-          oldCourses.map((c) => {
-            const newCourse = coursesToUpdate.filter((cu) => c.code === cu.code);
-            if (newCourse.length !== 0) {
-              return newCourse[0];
-            } else return c;
-          })
-        );
+        setCourses(oldCourses =>  
+          oldCourses.map(c => new Course(c.code,
+            c.name,
+            c.credits,
+            c.maxStudents,
+            c.incompatible,
+            c.preparatory,
+            c.newSignedStudents
+         )))
         if (await API.getStudyPlan(user.id)) {
           msg = `Successfully saved the study plan`;
           await API.modifyStudyPlan(studyPlan);

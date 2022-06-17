@@ -59,12 +59,12 @@ function LogoutButton(props) {
 
 function LogoutIcon(props) {
   return (
-    <Button className="pb-3" variant="link" size="sm">
+    <Button className="pb-3" variant="link" size="sm" onClick={props.logout}>
       <i
         className="bi bi bi-box-arrow-right text-white "
         role="img"
         alt="logo logout"
-        onClick={props.logout}
+        
       />
     </Button>
   );
