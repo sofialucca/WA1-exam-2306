@@ -90,3 +90,7 @@ td,th{
 .form-check-type{
   padding: -7rem 0;
 }
+
+ul{
+  list-style-type:none;
+}

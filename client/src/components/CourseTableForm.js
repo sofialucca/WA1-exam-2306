@@ -102,7 +102,6 @@ function CourseRow(props) {
 
       <tr
         className={`${expanded || !isEnabled ? "" : "row-separation"}`}
-        key={`course-${props.course.code}-infos`}
       >
         <CourseAction
           className={!isEnabled ? "bg-secondary" : ""}
@@ -129,32 +128,34 @@ function CourseRow(props) {
 
       <tr
         className={`border-3 border-warning ${!isEnabled ? "" : "d-none"} `}
-        key={`course-${props.course.code}-limitations`}
       >
         <td colSpan={7}>
           {deleteLimitations.length !== 0 ? (
             <p>
               {props.course.name} is preparatory for
-              {deleteLimitations.map((c) => (
-                <>
-                  <br />
-                  {c.code} - {c.name}
-                </>
-              ))}
+              <ul>
+                {deleteLimitations.map((c) => (
+                  <li key = {c.code}>
+                    {c.code} - {c.name}
+                  </li>
+                ))}                
+              </ul>
+
             </p>
           ) : (
-            <></>
-          )}
+            <></>  )}       
+         
           {addLimitations.length !== 0 ? (
-            <p>
+            <>
               {props.course.name} is incompatible with:
+              <ul>
               {addLimitations.map((c) => (
-                <>
-                  <br />
+                <li key = {c.code}>
                   {c.code} - {c.name}
-                </>
+                </li>
               ))}
-            </p>
+              </ul>
+            </>
           ) : (
             <></>
           )}
@@ -191,7 +192,6 @@ function CourseRow(props) {
 
       <tr
         className={expanded ? "row-separation" : "d-none"}
-        key={`course-${props.course.code}-description`}
       >
         <CourseDescription course={props.course} />
       </tr>
