@@ -38,32 +38,6 @@ const getAllCourses = async () => {
 };
 
 
-/**
- * MODIFY course
- * @param {*} course 
- * @returns 
- */
-const modifyCourse = async (course) => {
-  const response = await fetch(SERVER_URL + `/api/courses/${course.code}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      code: course.code,
-      name: course.name,
-      credits: course.credits,
-      maxStudents: course.maxStudents,
-      preparatory: course.preparatory,
-      signedStudents: course.signedStudents,
-    }),
-    credentials: "include",
-  });
-  if (!response.ok) {
-    const errMessage = await response.text();
-    throw errMessage;
-  }else{
-    return response;
-  }
-};
 
 /**
  * 
@@ -169,11 +143,9 @@ const deleteStudyPlan = async (userId) => {
     method: "DELETE",
     credentials: "include",
   });
-  const message = await response.json();
+
   if (!response.ok) {
-    throw message;
-  } else {
-    return message;
+    throw response.json();
   }
 };
 
@@ -241,7 +213,6 @@ const API = {
   getUserInfo,
   getStudyPlan,
   deleteStudyPlan,
-  modifyCourse,
   createStudyPlan,
   modifyStudyPlan,
 };

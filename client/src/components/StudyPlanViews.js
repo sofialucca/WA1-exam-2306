@@ -81,7 +81,7 @@ function StudyPlanRoute(props) {
     <>
       <Row>
         <Col>
-          <h1 className="title-table"> Edit Study Plan</h1>
+          <h1 className="title-table"> {props.studyPlan !== null ? "Edit " : "Create "} Study Plan</h1>
         </Col>
       </Row>
       <Row>

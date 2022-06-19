@@ -160,3 +160,21 @@ exports.deleteCourseStudyPlan = (id,code) => {
     })
 };
 
+exports.getStudentsCourses = () => {
+    return new Promise(async function(resolve,reject){
+        const sql = 'SELECT code, name, credits, maxStudents, preparatory, COUNT(DISTINCT studentMatricola) as signedStudents FROM Courses LEFT JOIN UserCourse ON courseCode = code GROUP BY code  ORDER BY name';
+        db.all(sql, [], (err,rows) => {
+
+            if(err) reject(err);
+            else{
+                if(rows){
+                    resolve(rows.map(row => 
+                        new Course(row.code,row.name,row.credits,row.maxStudents,null,row.preparatory, row.signedStudents)
+                    ))
+                }else(
+                    resolve([])
+                )
+            }                    
+        })
+    }) 
+}

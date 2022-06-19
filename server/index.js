@@ -98,7 +98,6 @@ app.put(
         await studyPlanDao.updateCourse(courseToUpdate);
         res.status(200).end();
       } catch (err) {
-        console.error(err);
         res.status(503).json({
           error: `Database error while updating ${courseToUpdate.code}.`,
         });
@@ -144,13 +143,14 @@ app.put(
       .then()
       .then(async () => {
         await studyPlanDao.deleteAllCoursesStudyPlan(req.params.id);
-      })
-      .then(async () => {
-        await req.body.courses.forEach(
-          async (c) =>
-            await studyPlanDao.addCourseStudyPlan(req.params.id, c.code)
-        );
-        return res.status(201).end();
+        for(let c of req.body.courses){
+          await studyPlanDao.addCourseStudyPlan(req.params.id, c.code);
+        }
+        const courses = await studyPlanDao.getStudentsCourses();
+        for( let c of courses){
+          await studyPlanDao.updateCourse(c)
+        }
+        return res.status(201).end();           
       })
       .catch((err) => {
         res.status(503).end();
@@ -186,13 +186,15 @@ app.post(
 
     studyPlanDao
       .createStudyPlan(req.params.id, req.body.type, req.body.totalCredits)
-      .then()
       .then(async () => {
-        await req.body.courses.forEach(
-          async (c) =>
-            await studyPlanDao.addCourseStudyPlan(req.params.id, c.code)
-        );
-        return res.status(201).end();
+        for(let c of req.body.courses){
+          await studyPlanDao.addCourseStudyPlan(req.params.id, c.code);
+        }
+        const courses = await studyPlanDao.getStudentsCourses();
+        for( let c of courses){
+          await studyPlanDao.updateCourse(c)
+        }
+        return res.status(201).end(); 
       })
       .catch((err) => res.status(503).end());
   }
@@ -229,10 +231,13 @@ app.delete(
       return res.status(422).json({ errors: errors.array() });
     studyPlanDao
       .deleteStudyPlan(req.params.id)
-      .then((data) => {
-        studyPlanDao
-          .deleteAllCoursesStudyPlan(req.params.id)
-          .then((data) => res.status(204));
+      .then(async(data) => {
+        await studyPlanDao.deleteAllCoursesStudyPlan(req.params.id);
+        const courses = await studyPlanDao.getStudentsCourses();
+        for(let  c of courses){
+          await studyPlanDao.updateCourse(c);
+        }
+        return res.status(204).end();   
       })
       .catch(() => res.status(503).end());
   }
