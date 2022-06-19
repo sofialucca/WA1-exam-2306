@@ -145,7 +145,8 @@ const deleteStudyPlan = async (userId) => {
   });
 
   if (!response.ok) {
-    throw response.json();
+    const errMsg = await  response.json();
+    throw errMsg;
   }
 };
 

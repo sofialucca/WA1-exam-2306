@@ -146,7 +146,8 @@ function App() {
         setCoursesUpdate([]);      
       
     }catch(err){
-      setMessage({ msg: err.error, type: "danger" })      ;
+      console.log(err);
+      setMessage({ msg: err.error , type: "danger" });
     }
 
   };

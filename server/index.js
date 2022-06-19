@@ -50,7 +50,7 @@ const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  return res.status(401).json({ error: "Not authorized" });
+  return res.status(401).json({ error : "Not authorized" });
 };
 
 app.use(
@@ -67,13 +67,17 @@ app.use(passport.authenticate("session"));
  * GET /api/courses
  * retrieve al courses
  */
-app.get("/api/courses", (req, res) => {
-  studyPlanDao
-    .listCourses()
-    .then((courses) => {
-      return res.json(courses).status(200).end();
-    })
-    .catch(() => res.status(500).end());
+app.get("/api/courses", async(req, res) => {
+  try{
+    const courses = await  studyPlanDao.listCourses();
+    for(let c of courses){
+      c.incompatible = await studyPlanDao.incompatibleCourses(c.code);
+    }
+    return res.json(courses).status(200).end();     
+  }catch(err){
+    console.log(err);
+    return res.status(500).end();
+  }
 });
 
 
@@ -91,20 +95,33 @@ app.put(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-      return res.status(422).json({ errors: errors.array() });
+      return res.status(422).json({ error: errors.array() });
     }
       
     switch (req.body.type) {
       case "full-time":
         if (req.body.totalCredits > 80 || req.body.totalCredits < 60)
-          return res.status(422).json({ errors: "Wrong quantity credits" });
+          return res.status(422).json({ error: "Wrong quantity credits" });
         break;
       case "part-time":
         if (req.body.totalCredits > 40 || req.body.totalCredits < 20)
-          return res.status(422).json({ errors: "Wrong quantity credits" });
+          return res.status(422).json({ error: "Wrong quantity credits" });
         break;
       default:
-        return res.status(422).json({ errors: "Wrong type" });
+        return res.status(422).json({ error: "Wrong type" });
+    }
+
+    for(let c of req.body.courses){
+      if(c.preparatory && req.body.courses.every(cc => cc.code !== c.preparatory)){
+        return res.status(422).json({ error: "Missing " + c.preparatory + " need by " + c.code });
+      }
+      
+      if(c.incompatible.length){
+        if(c.incompatible.some(cc =>
+          req.body.courses.some(cb => cb.code === cc.code)
+          ))
+          return res.status(422).json({ error: "There are courses incompatible with " + c.code });
+      }
     }
 
     studyPlanDao
@@ -136,23 +153,34 @@ app.post(
     isLoggedIn,
     check("id").isInt()
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({ errors: errors.array() });
+      return res.status(422).json({ error: errors.array() });
     switch (req.body.type) {
       case "full-time":
         if (req.body.totalCredits > 80 || req.body.totalCredits < 60)
-          return res.status(422).json({ errors: "Wrong quantity credits" });
+          return res.status(422).json({ error: "Wrong quantity credits" });
         break;
       case "part-time":
         if (req.body.totalCredits > 40 || req.body.totalCredits < 20)
-          return res.status(422).json({ errors: "Wrong quantity credits" });
+          return res.status(422).json({ error: "Wrong quantity credits" });
         break;
       default:
-        return res.status(422).json({ errors: "Wrong type" });
+        return res.status(422).json({ error: "Wrong type" });
     }
-
+    for(let c of req.body.courses){
+      if(c.preparatory && req.body.courses.every(cc => cc.code !== c.preparatory)){
+        return res.status(422).json({ error: "Missing " + c.preparatory + " need by " + c.code });
+      }
+      
+      if(c.incompatible.length){
+        if(c.incompatible.some(cc =>
+          req.body.courses.some(cb => cb.code === cc.code)
+          ))
+          return res.status(422).json({ error: "There are courses incompatible with " + c.code });
+      }
+    }
     studyPlanDao
       .createStudyPlan(req.params.id, req.body.type, req.body.totalCredits)
       .then(async () => {
@@ -176,14 +204,20 @@ app.post(
 app.get(
   "/api/studyplans/:id",
   [isLoggedIn, check("id").isInt()],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({ errors: errors.array() });
-    studyPlanDao
-      .getStudyPlan(req.params.id)
-      .then((studyPlan) => res.json(studyPlan).status(200))
-      .catch(() => res.status(500).end());
+      return res.status(422).json({ error: errors.array() });
+    try{
+      const newStudyPlan = await studyPlanDao.getStudyPlan(req.params.id);
+      for(let c of newStudyPlan.courses){
+        c.incompatible = await studyPlanDao.incompatibleCourses(c.code);
+      }
+      res.json(newStudyPlan).status(200);
+    }catch(err){
+      return res.status(500).end()
+    }
+
   }
 );
 /**
@@ -197,7 +231,7 @@ app.delete(
   (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
-      return res.status(422).json({ errors: errors.array() });
+      return res.status(422).json({ error: errors.array() });
     studyPlanDao
       .deleteStudyPlan(req.params.id)
       .then(async(data) => {
