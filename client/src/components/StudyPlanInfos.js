@@ -6,21 +6,26 @@ function StudyPlanInfos(props) {
   return (
     <>
       <Row>
-        <p>Type of studies: {props.studyPlan.type}</p>
+        <p>Type of studies: <u className = " text-capitalize fw-bold">{props.studyPlan.type}</u></p>
       </Row>
-      <Row>
+      <Row className = "mb-3">
         <Col>
           Minimum credits required:{" "}
           {props.studyPlan.minCredits}
         </Col>
-        <Col>Maximum credits available: {props.studyPlan.maxCredits}</Col>
+        <Col>
+          Maximum credits available:{" "} 
+          {props.studyPlan.maxCredits}
+        </Col>
       </Row>
       {props.studyPlan.courses.length ? (
         <StudyPlanTable {...props} />
       ) : (
-        <Row>NO COURSES</Row>
+        <Col sm = {{span:4, offset:4}} className = "rounded font-italic border border-2 border-warning fw-bold py-2">
+            NO COURSES 
+        </Col>
       )}
-      <Col>Total credits:{props.studyPlan.totalCredits}</Col>
+      <Col className = "my-3">Total credits: {" "} <span className = {props.studyPlan.neededCredits() < 0 ? "text-warning" : "text-success"}>{props.studyPlan.totalCredits}</span></Col>
     </>
   );
 }

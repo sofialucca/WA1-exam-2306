@@ -2,7 +2,7 @@ import { Row, Col, Button } from "react-bootstrap";
 
 import CourseTable from "./CourseTable.js";
 import { LoginForm, LogoutButton } from "./AuthComponents";
-import StudyPlanForm from "./StudyPlanComponents.js";
+import StudyPlanForm from "./StudyPlanForm.js";
 import StudyPlanCreator from "./StudyPlanCreator.js";
 import StudyPlanInfos from "./StudyPlanInfos";
 import CourseTableForm from "./CourseTableForm.js";
@@ -32,7 +32,9 @@ function LogoutRoute(props) {
           {props.studyPlan ? (
             <StudyPlanInfos studyPlan={props.studyPlan} />
           ) : (
-            <p>NO StudyPlan available</p>
+            <Col sm = {{span:4, offset:4}} className = "font-italic border border-2 border-warning fw-bold py-2 mb-3 rounded">
+              NO StudyPlan Defined 
+            </Col>
           )}
 
           <LogoutButton logout={props.logout} />

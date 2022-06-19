@@ -9,9 +9,10 @@ function StudyPlanCreator(props) {
     props.createStudyPlan(type);
   };
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} >
       <Form.Label>Select a type of study plan:</Form.Label>
-      <div key="default-radio" className="mb-3">
+      <Col sm = {{span: 2, offset:5}} >
+      <div key="default-radio" className="mb-4 mt-2">
         <Form.Check
           type="radio"
           id="default-radio-full"
@@ -23,6 +24,7 @@ function StudyPlanCreator(props) {
         />
 
         <Form.Check
+          className = "mt-2"
           type="radio"
           id="default-radio-part"
           label="Part-time"
@@ -31,7 +33,10 @@ function StudyPlanCreator(props) {
             setType("part-time");
           }}
         />
-      </div>
+        </div>        
+      </Col>
+
+      
 
       <Button
         className="btn-purple"

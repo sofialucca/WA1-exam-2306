@@ -17,28 +17,35 @@ function LoginForm(props) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="username">
-        <Form.Label>email</Form.Label>
-        <Form.Control
-          type="email"
-          value={username}
-          onChange={(ev) => setUsername(ev.target.value)}
-          required={true}
-        />
+      <Form.Group as = {Row} controlId="username">
+        <Form.Label column sm = {6}>Email</Form.Label>
+        <Col sm = {4}>
+          <Form.Control
+            type="email"
+            value={username}
+            onChange={(ev) => setUsername(ev.target.value)}
+            required={true}
+            
+          />
+        </Col>
+
       </Form.Group>
 
-      <Form.Group controlId="password">
-        <Form.Label>Password</Form.Label>
-        <Form.Control
-          type="password"
-          value={password}
-          onChange={(ev) => setPassword(ev.target.value)}
-          required={true}
-          minLength={6}
-        />
+      <Form.Group as = {Row} controlId="password" className = "mt-4">
+        <Form.Label column sm = {6}>Password</Form.Label>
+        <Col sm = {4}>
+          <Form.Control
+            type="password"
+            value={password}
+            onChange={(ev) => setPassword(ev.target.value)}
+            required={true}
+            minLength={6}
+          />          
+        </Col>
+
       </Form.Group>
 
-      <Button className="btn-purple" variant="" type="submit">
+      <Button className="btn-purple mt-5" variant="" type="submit">
         LOGIN
       </Button>
     </Form>
