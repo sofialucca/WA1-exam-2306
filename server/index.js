@@ -276,7 +276,7 @@ app.get("/api/sessions/current", (req, res) => {
 // DELETE /api/session/current
 app.delete("/api/sessions/current", (req, res) => {
   req.logout(() => {
-    res.end();
+    res.status(204).end();
   });
 });
 
