@@ -76,37 +76,6 @@ app.get("/api/courses", (req, res) => {
     .catch(() => res.status(500).end());
 });
 
-/**
- *  PUT /api/courses/:code
- * Modify course given the id
- */
-
-app.put(
-  "/api/courses/:code",
-  [
-    isLoggedIn,
-    check("code").isLength({ min: 7, max: 7 }),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(422).json({ errors: errors.array() });
-
-    const courseToUpdate = req.body;
-    if (req.params.code === courseToUpdate.code) {
-      try {
-        await studyPlanDao.updateCourse(courseToUpdate);
-        res.status(200).end();
-      } catch (err) {
-        res.status(503).json({
-          error: `Database error while updating ${courseToUpdate.code}.`,
-        });
-      }
-    } else {
-      res.status(503).json({ error: `Wrong exam code in the req body.` });
-    }
-  }
-);
 
 /**
  *  PUT /api/studyplans/:id
