@@ -210,9 +210,12 @@ app.get(
       return res.status(422).json({ error: errors.array() });
     try{
       const newStudyPlan = await studyPlanDao.getStudyPlan(req.params.id);
-      for(let c of newStudyPlan.courses){
-        c.incompatible = await studyPlanDao.incompatibleCourses(c.code);
+      if(newStudyPlan){
+        for(let c of newStudyPlan.courses){
+          c.incompatible = await studyPlanDao.incompatibleCourses(c.code);
+        }        
       }
+
       res.json(newStudyPlan).status(200);
     }catch(err){
       return res.status(500).end()
@@ -278,9 +281,16 @@ app.get("/api/sessions/current", (req, res) => {
 
 // DELETE /api/session/current
 app.delete("/api/sessions/current", (req, res) => {
-  req.logout(() => {
-    res.status(204).end();
-  });
+  try{
+    req.logout(() => {
+      return res.status(204).end();
+    })    
+  }catch(err){
+    //TODO delete
+    console.log(err);
+    return res.status(500).end();
+  }
+
 });
 
 app.listen(port, () =>

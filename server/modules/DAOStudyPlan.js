@@ -61,7 +61,7 @@ exports.getStudyPlan = (id) => {
             if(err)
                 reject(err);
             else{
-                if(rows){
+                if(rows.length){
                     const courses = rows.map( row => new Course(row.code,row.name,row.credits,row.maxStudents,null,row.preparatory, row.enrolledStudents));
                     resolve(new StudyPlan(courses, id, rows[0].type, rows[0].totalCredits));
                 }else
