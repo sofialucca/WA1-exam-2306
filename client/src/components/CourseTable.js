@@ -1,5 +1,5 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Table, Col, Button } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { useState } from "react";
 
 function CourseTable(props) {

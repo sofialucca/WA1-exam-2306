@@ -1,5 +1,5 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Table, Col, Button, Row, Form } from "react-bootstrap";
+import { Col, Button, Form } from "react-bootstrap";
 import { useState } from "react";
 
 function StudyPlanCreator(props) {

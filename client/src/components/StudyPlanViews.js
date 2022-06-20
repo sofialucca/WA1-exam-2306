@@ -1,4 +1,4 @@
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 
 import CourseTable from "./CourseTable.js";
 import { LoginForm, LogoutButton } from "./AuthComponents";

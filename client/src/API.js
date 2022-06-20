@@ -97,10 +97,15 @@ const logOut = async () => {
     const response = await fetch(SERVER_URL + "/api/sessions/current", {
       method: "DELETE",
       credentials: "include",
-    });    
+    });
+    if(!response.ok){
+      const errMessg = await response.text();
+      throw errMessg;
+    }   
   }catch(err){
     throw err;
   }
+  
 };
 
 /*****
@@ -145,7 +150,7 @@ const deleteStudyPlan = async (userId) => {
   });
 
   if (!response.ok) {
-    const errMsg = await  response.json();
+    const errMsg = await  response.text();
     throw errMsg;
   }
 };
@@ -174,7 +179,7 @@ const createStudyPlan = async (studyPlan) => {
   );
 
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.text();
     throw error;
   }
 };
@@ -201,7 +206,7 @@ const modifyStudyPlan = async (studyPlan) => {
   );
 
   if (!response.ok) {
-    const errMessage = await response.json();
+    const errMessage = await response.text();
     throw errMessage;
   }
 };

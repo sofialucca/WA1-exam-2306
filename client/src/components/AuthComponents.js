@@ -1,18 +1,15 @@
-"use strict";
-
 import { useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+
 
 function LoginForm(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const credentials = { username, password };
-    const result = props.login(credentials);
+    props.login(credentials);
   };
 
   return (

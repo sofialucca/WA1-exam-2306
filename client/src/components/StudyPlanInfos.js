@@ -1,6 +1,5 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Table, Button, Col, Row, Form } from "react-bootstrap";
-import { useState } from "react";
+import { Table, Col, Row } from "react-bootstrap";
 
 function StudyPlanInfos(props) {
   return (

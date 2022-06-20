@@ -1,5 +1,3 @@
-'use strict';
-
 function Course(code,name,credits, maxStudents, incompatible,preparatory, signedStudents, newSignedStudents){
     this.code = code;
     this.name = name;

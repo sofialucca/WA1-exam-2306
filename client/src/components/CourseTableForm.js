@@ -1,5 +1,5 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Table, Col, Button } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 
 function CourseTableForm(props) {
@@ -95,7 +95,7 @@ function CourseRow(props) {
     ) {
       setEnabled(false);
     }
-  }, [props.studyPlan.courses]);
+  }, [props.studyPlan, props.course]);
 
   return (
     <>

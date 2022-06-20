@@ -1,13 +1,12 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import { Container, Row, Alert } from "react-bootstrap";
+import { Container, Row, Alert,Col } from "react-bootstrap";
 import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate,
-  useNavigate,
+  Navigate
 } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -146,6 +145,7 @@ function App() {
         setCoursesUpdate([]);      
       
     }catch(err){
+      //TODO remove console.log
       console.log(err);
       setMessage({ msg: err.error , type: "danger" });
     }
@@ -159,7 +159,7 @@ function App() {
   const saveStudyPlan = async () => {
     if (studyPlan && studyPlan.neededCredits() >= 0) {
       try{
-        if(coursesToUpdate.length == 0){
+        if(coursesToUpdate.length === 0){
           return;
         }
         let msg;
@@ -191,9 +191,9 @@ function App() {
       setMessage({
         msg: (
           <>
-            Not enough credits.
+            Not enough credits!
             <br />
-            Need at least :{-studyPlan.neededCredits()} more
+            Need at least {-studyPlan.neededCredits()} more
           </>
         ),
         type: "warning",
@@ -220,7 +220,12 @@ function App() {
     try {
       const user = await API.logIn(credentials);
       setLoggedIn(true);
-      setMessage({ msg: `Successfull login`, type: "success" });
+      setMessage({ msg:
+        (<>
+          Successfull login<br/>
+          Welcome {user.name}
+        </>),
+        type: "success" });
       setUser({ ...user });
       getStudyPlan(user.id);
     } catch (err) {
@@ -252,13 +257,16 @@ function App() {
             logout={handleLogout}
           />
           {message && (
-            <Alert
-              variant={message.type}
-              onClose={() => setMessage("")}
-              dismissible
-            >
-              {message.msg}
-            </Alert>
+            <Col sm ={{span:4, offset:4}}>
+              <Alert
+                variant={message.type}
+                onClose={() => setMessage("")}
+                dismissible
+              >
+                {message.msg}
+              </Alert>              
+            </Col>
+
           )}
         </Row>
 

@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Navbar, Form, FormControl, Button, Col } from "react-bootstrap";
+import { Navbar} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { LogoutIcon } from "./AuthComponents";
 
