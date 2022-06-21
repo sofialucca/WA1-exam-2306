@@ -43,7 +43,22 @@ exports.listCourses = () => {
         })
     })
 }
+exports.getCourse = (code) => {
+    return new Promise(async function(resolve,reject){
+        const sql = 'SELECT * FROM Courses WHERE code = ?';
+        db.get(sql, [code], (err,row) => {
 
+            if(err) reject(err);
+            else{
+                if(row) 
+                    resolve(new Course(row.code,row.name,row.credits,row.maxStudents,null,row.preparatory, row.enrolledStudents))
+                else
+                    resolve(null);
+
+            }
+        })
+    })
+}
 exports.updateCourse = (course) => {
     return new Promise((resolve, reject) => {
       const sql = 'UPDATE Courses SET enrolledStudents=? WHERE code=?';
@@ -150,4 +165,21 @@ exports.getStudentsCourses = () => {
             }                    
         })
     }) 
+}
+
+exports.courseInStudyPlan = (code,id) => {
+    return new Promise((resolve,reject) => {
+        const sql = "SELECT * FROM UserCourse WHERE studentMatricola = ? AND courseCode = ?" ;
+        db.get(sql, [id, code], (err,row) => {
+            if(err)
+                reject(err);
+            else{
+                if(row){
+                    resolve(true)
+                }else
+                    resolve(false);
+            }
+      
+        })
+    })    
 }

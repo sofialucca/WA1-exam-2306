@@ -1,5 +1,5 @@
-import Course from "./Course";
-import StudyPlan from "./StudyPlan";
+import Course from "./library/Course";
+import StudyPlan from "./library/StudyPlan";
 
 const SERVER_URL = "http://localhost:3001";
 

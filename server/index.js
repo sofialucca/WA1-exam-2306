@@ -50,8 +50,54 @@ const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  return res.status(401).json({ error : "Not authorized" });
+  return res.status(401).send("Not authorized");
 };
+
+const checkStudyPlan = async (req, res, next) => {
+  let errorMsg = "";
+  switch (req.body.type) {
+    case "full-time":
+      if (req.body.totalCredits > 80 || req.body.totalCredits < 60){
+        errorMsg += "Wrong quantity credits\n";
+      } 
+      break;
+    case "part-time":
+      if (req.body.totalCredits > 40 || req.body.totalCredits < 20){
+        errorMsg += "Wrong quantity credits\n";
+      }
+      break;
+    default:
+      errorMsg +="Not existing type\n";
+  }
+
+  for(let c of req.body.courses){
+    if(c.preparatory && req.body.courses.every(cc => cc.code !== c.preparatory)){
+      errorMsg += "Missing " + c.preparatory + " need by " + c.code +"\n";
+    }
+    
+    if(c.incompatible.length){
+      if(c.incompatible.some(cc =>
+        body.courses.some(cb => cb.code === cc.code)
+        )){
+          errorMsg += "There are courses incompatible with " + c.code + " in the study plan\n"
+        }
+    }
+    if(c.maxStudents){
+      const courseDB = await studyPlanDao.getCourse(c.code);
+      const checkCourse = await studyPlanDao.courseInStudyPlan(c.code, body.userId);
+      if(!checkCourse && courseDB.signedStudents + 1 > c.maxStudents){
+
+        errorMsg += c.code + " already full\n";
+      }
+    
+    }
+  }
+  if(errorMsg){
+    return res.status(422).send(errorMsg);
+  }
+  return next();
+
+}
 
 app.use(
   session({
@@ -85,44 +131,30 @@ app.get("/api/courses", async(req, res) => {
  *  PUT /api/studyplans/:id
  * Modify studyplan given the id
  */
-//TODO server side check
 app.put(
   "/api/studyplans/:id",
   [
     isLoggedIn,
     check("id").isInt(),
+    check
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-      return res.status(422).json({ error: errors.array() });
-    }
-      
-    switch (req.body.type) {
-      case "full-time":
-        if (req.body.totalCredits > 80 || req.body.totalCredits < 60)
-          return res.status(422).json({ error: "Wrong quantity credits" });
-        break;
-      case "part-time":
-        if (req.body.totalCredits > 40 || req.body.totalCredits < 20)
-          return res.status(422).json({ error: "Wrong quantity credits" });
-        break;
-      default:
-        return res.status(422).json({ error: "Wrong type" });
+      let errMsg = ""
+      errors.array().forEach(c =>
+        errMsg += c.toString() + "\n"  
+      );
+      return res.status(422).send(errMsg);
     }
 
-    for(let c of req.body.courses){
-      if(c.preparatory && req.body.courses.every(cc => cc.code !== c.preparatory)){
-        return res.status(422).json({ error: "Missing " + c.preparatory + " need by " + c.code });
-      }
+    const errMsg = await checkStudyPlan(req.body);
+    if(errMsg.length){
       
-      if(c.incompatible.length){
-        if(c.incompatible.some(cc =>
-          req.body.courses.some(cb => cb.code === cc.code)
-          ))
-          return res.status(422).json({ error: "There are courses incompatible with " + c.code });
-      }
+      return res.status(422).send(errMsg);
+      
     }
+
 
     studyPlanDao
       .modifyStudyPlan(req.params.id, req.body.totalCredits)
@@ -155,31 +187,16 @@ app.post(
   ],
   async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(422).json({ error: errors.array() });
-    switch (req.body.type) {
-      case "full-time":
-        if (req.body.totalCredits > 80 || req.body.totalCredits < 60)
-          return res.status(422).json({ error: "Wrong quantity credits" });
-        break;
-      case "part-time":
-        if (req.body.totalCredits > 40 || req.body.totalCredits < 20)
-          return res.status(422).json({ error: "Wrong quantity credits" });
-        break;
-      default:
-        return res.status(422).json({ error: "Wrong type" });
+    if (!errors.isEmpty()){
+      let errMsg = ""
+      errors.array().forEach(c =>
+        errMsg += c.toString() + "\n"  
+      );
+      return res.status(422).send(errMsg);
     }
-    for(let c of req.body.courses){
-      if(c.preparatory && req.body.courses.every(cc => cc.code !== c.preparatory)){
-        return res.status(422).json({ error: "Missing " + c.preparatory + " need by " + c.code });
-      }
-      
-      if(c.incompatible.length){
-        if(c.incompatible.some(cc =>
-          req.body.courses.some(cb => cb.code === cc.code)
-          ))
-          return res.status(422).json({ error: "There are courses incompatible with " + c.code });
-      }
+    const errMsg = await checkStudyPlan(req.body);
+    if(errMsg.length){    
+      return res.status(422).send(errMsg);    
     }
     studyPlanDao
       .createStudyPlan(req.params.id, req.body.type, req.body.totalCredits)
@@ -206,8 +223,13 @@ app.get(
   [isLoggedIn, check("id").isInt()],
   async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(422).json({ error: errors.array() });
+    if (!errors.isEmpty()){
+      let errMsg = ""
+      errors.array().forEach(c =>
+        errMsg += c.toString() + "\n"  
+      );
+      return res.status(422).send(errMsg);
+    }
     try{
       const newStudyPlan = await studyPlanDao.getStudyPlan(req.params.id);
       if(newStudyPlan){
@@ -233,8 +255,14 @@ app.delete(
   [isLoggedIn, check("id").isInt()],
   (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(422).json({ error: errors.array() });
+    if (!errors.isEmpty()){
+      let errMsg = ""
+      errors.array().forEach(c =>
+        errMsg += c.toString() + "\n"  
+      );
+      return res.status(422).send(errMsg);
+    }
+      
     studyPlanDao
       .deleteStudyPlan(req.params.id)
       .then(async(data) => {
@@ -255,6 +283,7 @@ app.delete(
 
 app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
+    
     if (err) return next(err);
     if (!user) {
       // display wrong login messages

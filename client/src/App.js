@@ -19,8 +19,8 @@ import {
 import { NavbarStudyPlan } from "./components/NavbarComponents.js";
 
 import API from "./API";
-import StudyPlan from "./StudyPlan";
-import Course from "./Course";
+import StudyPlan from "./library/StudyPlan";
+import Course from "./library/Course";
 
 function App() {
   const [courses, setCourses] = useState([]);
@@ -106,6 +106,7 @@ function App() {
     getStudyPlan(user.id);
     getCourses();
     setCoursesUpdate([]);
+    
   };
 
   const deleteStudyPlan = async () => {
@@ -147,7 +148,25 @@ function App() {
     }catch(err){
       //TODO remove console.log
       console.log(err);
-      setMessage({ msg: err.error , type: "danger" });
+      const errArray = err.split("\n");
+      const newMsg = (
+        <>
+        <ul>
+          {errArray.map((er,index) => {
+            if(index+1 < errArray.length )
+               return <li key = {er}>{er}</li>
+            else
+              return <></> 
+          }
+            
+          )
+          }            
+        </ul>
+
+        </>
+      )
+      setMessage({ msg: newMsg, type: "danger" });
+
     }
 
   };
@@ -160,6 +179,7 @@ function App() {
     if (studyPlan && studyPlan.neededCredits() >= 0) {
       try{
         if(coursesToUpdate.length === 0){
+          setMessage({ msg: "No updates to save", type: "info" })
           return;
         }
         let msg;
@@ -184,7 +204,24 @@ function App() {
         setCoursesUpdate([]); 
         setMessage({ msg: msg, type: "success" })      ;       
       }catch(err){
-        setMessage({ msg: err.error, type: "danger" })      ;
+        const errArray = err.split("\n");
+        const newMsg = (
+          <>
+          <ul>
+            {errArray.map((er,index) => {
+              if(index+1 < errArray.length )
+                 return <li key = {er}>{er}</li>
+              else
+                return <></> 
+            }
+              
+            )
+            }            
+          </ul>
+
+          </>
+        )
+        setMessage({ msg: newMsg, type: "danger" });
       }
 
     } else {
